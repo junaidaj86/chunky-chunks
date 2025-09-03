@@ -20,8 +20,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- Prefetch hero & logo (Google Drive) -->
-  <link rel="prefetch" as="image" href="https://drive.usercontent.google.com/download?id=1QZDO3pHP2hAEspFQLXL360RGBoxc3M8a&export=view" />
-  <link rel="prefetch" as="image" href="https://drive.usercontent.google.com/download?id=1hUBagr0wfEC0-kY_a58Q7C69_2b28Elt&export=view" />
+  <!-- <link rel="prefetch" as="image" href="https://drive.usercontent.google.com/download?id=1QZDO3pHP2hAEspFQLXL360RGBoxc3M8a&export=view" />
+  <link rel="prefetch" as="image" href="https://drive.usercontent.google.com/download?id=1hUBagr0wfEC0-kY_a58Q7C69_2b28Elt&export=view" /> -->
 
   <!-- Manifest / Favicon -->
   <link rel="manifest" href="manifest.webmanifest">
@@ -283,23 +283,6 @@
   <div id="announce" class="visually-hidden" aria-live="polite"></div>
 
   <script defer src="app.js"></script>
-  <script>
-    // Mobile nav toggle (kept minimal)
-    const navToggle=document.getElementById('navToggle');
-    const primaryNav=document.getElementById('primaryNav');
-    if(navToggle&&primaryNav){
-      navToggle.addEventListener('click',()=>{
-        const open=primaryNav.classList.toggle('open');
-        navToggle.setAttribute('aria-expanded',String(open));
-      });
-    }
 
-    // PWA registration (optional)
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js').catch(()=>{});
-      });
-    }
-  </script>
 </body>
 </html>

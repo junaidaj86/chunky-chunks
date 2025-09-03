@@ -28,12 +28,13 @@ if(navToggle && primaryNav){
 const DRIVE_ASSETS = {
   logo:'1hUBagr0wfEC0-kY_a58Q7C69_2b28Elt',
   tiramisu:'1lo6vtFa6QREzQKT1ohnt6aes5fAMDH-4',
-  cookies:'17xVUGLArlc0b584gnuo2DJH5W2uXf7wX',
-  cheesecake:'1ha5_f4_3Lr8FF9ituY8wHnTlkStcBmg1',
+  cookies:'1bwOV_h8JBjxgnc9zvOqI2Ppr_Sfhofzi', // new
+  cheesecake:'1vG60IWKZafSiKC9GK-8mDROnpY76wz0b', // new
   loaf:'1f5J-yf29bSNWfs8PZFAMOVWwWGA9y0fQ',
   brownie:'1-LBYsgWt4Q6hV0F_bxE9UdNUMtl3th1U',
   muffins:'1Urq0AnkDzj5QZVQPPYT0RenPnmbyJqOq'
 };
+
 const driveUrl   = id => `https://drive.usercontent.google.com/download?id=${id}&export=view`;
 const driveThumb = id => `https://drive.google.com/thumbnail?id=${id}&sz=w1200`;
 
@@ -80,12 +81,15 @@ let lastFocusedTrigger=null;
 
 /* Rendering */
 function imageTagFor(prod){
-  if(prod.remoteId){
-    const src=driveUrl(prod.remoteId), fb=driveThumb(prod.remoteId);
-    return `<img src="${src}" alt="${prod.name}" width="480" height="360" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${fb}'" />`;
+  if (prod.remoteId) {
+    const driveImageUrl = `https://drive.usercontent.google.com/download?id=${prod.remoteId}&export=view`;
+    const driveThumbnailUrl = `https://drive.google.com/thumbnail?id=${prod.remoteId}&sz=w1200`;
+    return `<img src="${driveImageUrl}" alt="${prod.name}" width="480" height="360" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${driveThumbnailUrl}';this.onerror=null;this.src='${PLACEHOLDER}';" />`;
+  }else if (prod.image) {
+    const webp = `images/${prod.image.replace('.png','.webp')}`;
+    const png = `images/${prod.image.replace('.webp','.png')}`;
+    return `<picture><source srcset="${webp}" type="image/webp"/><img src="${png}" alt="${prod.name}" width="480" height="360" loading="lazy" decoding="async" onerror="this.src='${PLACEHOLDER}'"/></picture>`;
   }
-  const webp=`images/${prod.image.replace('.png','.webp')}`, png=`images/${prod.image.replace('.webp','.png')}`;
-  return `<picture><source srcset="${webp}" type="image/webp"/><img src="${png}" alt="${prod.name}" width="480" height="360" loading="lazy" decoding="async" onerror="this.src='${PLACEHOLDER}'"/></picture>`;
 }
 function renderMenu(){
   grid.innerHTML='';
