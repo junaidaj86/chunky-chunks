@@ -19,78 +19,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <!-- Prefetch hero & logo (Google Drive) -->
-  <!-- <link rel="prefetch" as="image" href="https://drive.usercontent.google.com/download?id=1QZDO3pHP2hAEspFQLXL360RGBoxc3M8a&export=view" />
-  <link rel="prefetch" as="image" href="https://drive.usercontent.google.com/download?id=1hUBagr0wfEC0-kY_a58Q7C69_2b28Elt&export=view" /> -->
-
   <!-- Manifest / Favicon -->
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="images/favicon.svg" type="image/svg+xml" />
 
-  <!-- Inline critical CSS -->
-  <style>
-    :root{
-      --cocoa:#6B3A2E;--mocha:#A86B55;--cream:#FFF7F3;--blush:#F3E3DC;--ink:#2F2320;
-      --space:16px;--radius:18px;--shadow:0 6px 16px rgba(107,58,46,.12)
-    }
-    html{box-sizing:border-box}
-    *,*:before,*:after{box-sizing:inherit}
-    body{margin:0;font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";color:var(--ink);background:var(--cream);line-height:1.6;-webkit-font-smoothing:antialiased}
-    img{max-width:100%;height:auto;display:block}
-    h1,h2,h3{font-family:"Playfair Display",ui-serif,Georgia,"Times New Roman",serif;color:var(--cocoa);line-height:1.2;margin:0 0 .5rem}
-    a{color:var(--cocoa);text-decoration:none}
-    a:focus,button:focus,input:focus,select:focus,textarea:focus{outline:3px solid var(--mocha);outline-offset:2px}
-    .container{max-width:1100px;margin:0 auto;padding:0 var(--space)}
-    .visually-hidden{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
-
-    /* Header (mobile-first) */
-    header{position:sticky;top:0;z-index:1000;background:rgba(255,247,243,.9);backdrop-filter:saturate(180%) blur(8px);border-bottom:1px solid #eadbd5}
-    .nav{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;padding:8px 0}
-    .brand{display:flex;align-items:center;gap:10px;min-width:0}
-    .brand-logo{height:28px;width:auto}                   /* NEW: mobile logo size */
-    @media (min-width:400px){.brand-logo{height:32px}}
-    @media (min-width:768px){.brand-logo{height:40px}}
-    .nav-toggle{border:1px solid #e6d6cf;background:#fff;border-radius:12px;padding:8px 12px;font-weight:600}
-    .primary-nav{grid-column:1 / -1;display:none;margin:6px 0 0}
-    .primary-nav.open{display:block}
-    .primary-nav ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
-    .primary-nav a{padding:8px 10px;border-radius:999px}
-    .primary-nav a:hover{background:var(--blush)}
-    .cta{background:var(--cocoa);color:#fff;padding:10px 14px;border-radius:999px;font-weight:600;border:none;white-space:nowrap}
-
-    /* Desktop header */
-    @media(min-width:768px){
-      .nav{grid-template-columns:auto 1fr auto}
-      .nav-toggle{display:none}
-      .primary-nav{display:block;grid-column:auto}
-      .primary-nav ul{flex-direction:row;gap:14px}
-    }
-
-    /* Hero */
-    #hero{position:relative;overflow:hidden;background:linear-gradient(180deg,#fff7f3 0%,#f9efe9 100%)}
-    #hero .container{display:grid;grid-template-columns:1fr;gap:14px;padding:28px var(--space) 26px}
-    .hero-actions{display:flex;gap:10px;flex-wrap:wrap}
-    .btn-outline{border:2px solid var(--cocoa);color:var(--cocoa);background:transparent;padding:8px 12px;border-radius:999px;font-weight:600}
-    .btn-outline:hover{background:var(--blush)}
-    .watermark:after{
-      content:"";position:absolute;inset:-60px -60px auto auto;
-      background:url('https://drive.usercontent.google.com/download?id=1hUBagr0wfEC0-kY_a58Q7C69_2b28Elt&export=view') no-repeat right top/420px;
-      opacity:.06;filter:grayscale(20%);pointer-events:none
-    }
-
-    /* NEW: hero image clamp for phones */
-    .hero-img{width:100%;height:auto;border-radius:20px;box-shadow:var(--shadow);display:block}
-    @media (max-width:480px){
-      .hero-img{aspect-ratio:16/10;max-height:240px;object-fit:cover}
-      #hero .container{padding:18px var(--space) 18px;gap:10px}
-      .watermark:after{background-size:260px;inset:-30px -30px auto auto;opacity:.05}
-    }
-
-    /* Reduce motion */
-    @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
-  </style>
-
-  <!-- Non-critical stylesheet -->
+  <!-- Site CSS -->
   <link rel="stylesheet" href="styles.css" />
 
   <!-- JSON-LD -->
@@ -111,11 +44,10 @@
 <body>
   <a class="visually-hidden" href="#menu">Skip to menu</a>
 
+  <!-- HEADER -->
   <header role="banner">
     <div class="container nav" aria-label="Top Bar">
-      <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="primaryNav">Menu</button>
-
-      <!-- BRAND (uses .brand-logo sizing) -->
+      <!-- BRAND (left) -->
       <a href="#" class="brand" aria-label="Chunky Chunks home">
         <img
           class="brand-logo"
@@ -127,17 +59,17 @@
         <strong>Chunky Chunks</strong>
       </a>
 
-      <!-- Optional header CTA; keep or remove as preferred
-      <div class="right">
-        <a class="cta" id="whatsAppHeader" href="https://wa.me/46767427167"
-           onclick="return openWhatsApp();" rel="noopener" target="_blank"
-           aria-label="Order on WhatsApp">Order on WhatsApp</a>
-      </div>
-      -->
+      <!-- HAMBURGER (right) -->
+      <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="primaryNav" aria-label="Open menu">
+        <svg class="icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
 
+      <!-- Primary nav: off-canvas on mobile, inline on desktop -->
       <nav id="primaryNav" class="primary-nav" aria-label="Primary">
+        <button class="nav-close" id="navClose" aria-label="Close menu">✕</button>
         <ul>
-          
           <li><a href="#about">About</a></li>
           <li><a href="#how-to-order">How to Order</a></li>
           <li><a href="#faq">FAQ</a></li>
@@ -282,7 +214,7 @@
 
   <div id="announce" class="visually-hidden" aria-live="polite"></div>
 
-  <script defer src="app.js"></script>
-
+  <!-- App JS -->
+  <script src="app.js" defer></script>
 </body>
 </html>

@@ -14,45 +14,68 @@ window.openWhatsApp = function(encodedMsg){
   window.open(url,'_blank','noopener'); return false;
 };
 
-/* Mobile nav toggle (a11y) */
+/* ===== Mobile nav toggle (a11y + UX) ===== */
 const navToggle = document.getElementById('navToggle');
 const primaryNav = document.getElementById('primaryNav');
-if(navToggle && primaryNav){
-  navToggle.addEventListener('click', ()=>{
-    const open = primaryNav.classList.toggle('open');
-    navToggle.setAttribute('aria-expanded', String(open));
-  });
+const navClose  = document.getElementById('navClose');
+
+function openNav(){
+  if(!primaryNav) return;
+  primaryNav.classList.add('open');
+  navToggle && navToggle.setAttribute('aria-expanded','true');
+  document.body.style.overflow = 'hidden';
+}
+function closeNav(){
+  if(!primaryNav) return;
+  primaryNav.classList.remove('open');
+  navToggle && navToggle.setAttribute('aria-expanded','false');
+  document.body.style.overflow = '';
 }
 
-/* Drive assets */
+if(navToggle && primaryNav){
+  navToggle.addEventListener('click', () => {
+    primaryNav.classList.contains('open') ? closeNav() : openNav();
+  });
+}
+navClose && navClose.addEventListener('click', closeNav);
+
+/* Close when clicking any link inside nav (mobile) */
+primaryNav && primaryNav.addEventListener('click', (e) => {
+  if(e.target.closest('a')) closeNav();
+});
+
+/* Close on Escape */
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Escape' && primaryNav && primaryNav.classList.contains('open')) closeNav();
+});
+
+/* ===== Drive assets ===== */
 const DRIVE_ASSETS = {
   logo:'1hUBagr0wfEC0-kY_a58Q7C69_2b28Elt',
   tiramisu:'1djX1RpV651iw35dr1_Ky9yTCYlPw6r56',
-  cookies:'1bwOV_h8JBjxgnc9zvOqI2Ppr_Sfhofzi', // new
-  cheesecake:'1vG60IWKZafSiKC9GK-8mDROnpY76wz0b', // new
+  cookies:'1bwOV_h8JBjxgnc9zvOqI2Ppr_Sfhofzi',
+  cheesecake:'1vG60IWKZafSiKC9GK-8mDROnpY76wz0b',
   loaf:'1v1yNMJRJfyANYsFJLkLUEfanEszes0_t',
   brownie:'1sWr5j7ZzBdf4Be1bBEz6p8Q3fPwoe-tl',
   muffins:'17JmI6A0dLVsd70LnH60UBabjaKmup4PG'
 };
-
-
 const driveUrl   = id => `https://drive.usercontent.google.com/download?id=${id}&export=view`;
 const driveThumb = id => `https://drive.usercontent.google.com/download?id=${id}&export=view`;
 
-/* Catalog */
+/* ===== Catalog ===== */
 const ITEMS = [
   { category:'Tiramisu',    name:'Tiramisu',    price:129, image:DRIVE_ASSETS.tiramisu,    remoteId:DRIVE_ASSETS.tiramisu,   variants:['Classic','Biscoff'] },
   { category:'Cookies',     name:'Cookies',     price:20,  image:DRIVE_ASSETS.cookies,     remoteId:DRIVE_ASSETS.cookies,    variants:['Chocolate Chip','Double Chocolate','Red Velvet'] },
   { category:'Cheesecakes', name:'Cheesecake',  price:25,  image:DRIVE_ASSETS.cheesecake,  remoteId:DRIVE_ASSETS.cheesecake, variants:['Blueberry','Strawberry','Biscoff','Lemon','Plain'], options:{ size:['Mini','Regular', 'Full'] }, optionPrice:{ size:{ 'Mini':25, 'Regular':75, 'Full':250 } } },
-  { category:'Loaf Cake',   name:'Loaf Cake',   price:100,  image:DRIVE_ASSETS.loaf,        remoteId:DRIVE_ASSETS.loaf,       variants:['Orange', 'Zebra', 'Vanilla', 'Chocolate'] },
+  { category:'Loaf Cake',   name:'Loaf Cake',   price:100, image:DRIVE_ASSETS.loaf,        remoteId:DRIVE_ASSETS.loaf,       variants:['Orange', 'Zebra', 'Vanilla', 'Chocolate'] },
   { category:'Brownie',     name:'Brownie',     price:25,  image:DRIVE_ASSETS.brownie,     remoteId:DRIVE_ASSETS.brownie,    variants:['Classic Fudgy', 'Walnuts', 'Double Chocolate', 'Biscoff', 'Oreo', 'Salted Caramel', 'Peanut Butter', 'Nutella'] },
   { category:'Muffins',     name:'Muffins',     price:25,  image:DRIVE_ASSETS.muffins,     remoteId:DRIVE_ASSETS.muffins,    variants:['Vanilla','Double Chocolate','Blueberry','Banana'] }
 ];
 
-/* Placeholder */
+/* ===== Placeholder (local fallback) ===== */
 const PLACEHOLDER = 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" width="640" height="480"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FFF7F3"/><stop offset="100%" stop-color="#F3E3DC"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#g)"/><g fill="#6B3A2E" opacity="0.5"><circle cx="540" cy="-20" r="180"/></g><text x="32" y="56" font-family="Georgia, serif" font-size="32" fill="#6B3A2E">Chunky Chunks</text><text x="32" y="96" font-family="Inter, system-ui" font-size="18" fill="#2F2320">Delicious bakery placeholder</text></svg>`);
 
-/* State */
+/* ===== State ===== */
 const state = {
   filter:'All',
   cart: JSON.parse(localStorage.getItem('cc_cart')||'[]'),
@@ -62,7 +85,7 @@ const state = {
   time: localStorage.getItem('cc_time')||''
 };
 
-/* DOM */
+/* ===== DOM ===== */
 const grid=document.getElementById('menuGrid');
 const filters=document.querySelectorAll('.filter');
 const cartBtn=document.getElementById('openCart');
@@ -80,21 +103,17 @@ const timeEl=document.getElementById('pickupTime');
 const announce=document.getElementById('announce');
 let lastFocusedTrigger=null;
 
-/* Rendering */
-
-
+/* ===== Rendering ===== */
 function imageTagFor(prod){
   // Prefer cookie-less endpoint; keep thumbnail as secondary.
-  const driveUrl   = id => `https://drive.google.com/uc?export=view&id=${id}`;
-  const driveThumb = id => `https://drive.google.com/thumbnail?id=${id}&sz=w1200`;
+  const driveUrlX   = id => `https://drive.google.com/uc?export=view&id=${id}`;
+  const driveThumbX = id => `https://drive.google.com/thumbnail?id=${id}&sz=w1200`;
   const localWebp = `images/${(prod.image||'').replace('.png','.webp')}`;
   const localPng  = `images/${(prod.image||'').replace('.webp','.png')}`;
 
   if (prod.remoteId) {
-    const primary = driveUrl(prod.remoteId);
-    const fb1 = driveThumb(prod.remoteId);
-
-    // IMPORTANT: chain fallbacks via nested onerror functions (not sequential statements).
+    const primary = driveUrlX(prod.remoteId);
+    const fb1 = driveThumbX(prod.remoteId);
     return `
       <img
         src="${primary}"
@@ -118,7 +137,6 @@ function imageTagFor(prod){
       />`;
   }
 
-  // No remoteId → use local assets with a final placeholder
   if (prod.image) {
     return `
       <picture>
@@ -132,9 +150,30 @@ function imageTagFor(prod){
         />
       </picture>`;
   }
-
-  // Safety net
   return `<img src="${PLACEHOLDER}" alt="${prod?.name||'Item'}" width="480" height="360" loading="lazy" decoding="async"/>`;
+}
+
+function descFor(p){
+  if(p.category==='Tiramisu')return'Hand-layered mascarpone cream with espresso-soaked sponge; also in Biscoff.';
+  if(p.category==='Cookies')return'Thick, gooey center with premium chocolate.';
+  if(p.category==='Cheesecakes')return'Silky baked cheesecake in Mini or Regular; multiple flavors.';
+  if(p.category==='Loaf Cake')return'Soft orange loaf with citrus glaze.';
+  if(p.category==='Brownie')return'Classic fudgy brownie; optional add-ons.';
+  if(p.category==='Muffins')return'Moist bakery-style muffins with multiple flavors.';
+  return'Freshly baked goodness.';
+}
+function variantSelect(p){
+  if(!p.variants)return''; const opts=p.variants.map(v=>`<option value="${v}">${v}</option>`).join('');
+  const id=`var-${p.category.replace(/\s+/g,'')}`;
+  return `<label class="visually-hidden" for="${id}">Variant</label><select id="${id}" class="select variant" aria-label="Choose variant">${opts}</select>`;
+}
+function optionBlock(p){
+  if(!p.options)return''; if(p.options.size){const id=`opt-size-${p.category.replace(/\s+/g,'')}`;
+  return `<label class="visually-hidden" for="${id}">Size</label><select id="${id}" class="select size" aria-label="Choose size">${p.options.size.map(s=>`<option value="${s}">${s}</option>`).join('')}</select>`;}
+  return'';
+}
+function addOnBlock(p){
+  if(!p.addOns)return''; return `<fieldset class="addons"><legend class="visually-hidden">Add-ons</legend>${p.addOns.map(a=>`<label class="small"><input type="checkbox" value="${a.label}" data-price="${a.price}"> ${a.label} (+${a.price} kr)</label>`).join('<br>')}</fieldset>`;
 }
 
 function renderMenu(){
@@ -160,30 +199,8 @@ function renderMenu(){
     grid.appendChild(card);
   });
 }
-function descFor(p){
-  if(p.category==='Tiramisu')return'Hand-layered mascarpone cream with espresso-soaked sponge; also in Biscoff.';
-  if(p.category==='Cookies')return'Thick, gooey center with premium chocolate.';
-  if(p.category==='Cheesecakes')return'Silky baked cheesecake in Mini or Regular; multiple flavors.';
-  if(p.category==='Loaf Cake')return'Soft orange loaf with citrus glaze.';
-  if(p.category==='Brownie')return'Classic fudgy brownie; optional add-ons.';
-  if(p.category==='Muffins')return'Moist bakery-style muffins with multiple flavors.';
-  return'Freshly baked goodness.';
-}
-function variantSelect(p){
-  if(!p.variants)return''; const opts=p.variants.map(v=>`<option value="${v}">${v}</option>`).join('');
-  const id=`var-${p.category.replace(/\s+/g,'')}`;
-  return `<label class="visually-hidden" for="${id}">Variant</label><select id="${id}" class="select variant" aria-label="Choose variant">${opts}</select>`;
-}
-function optionBlock(p){
-  if(!p.options)return''; if(p.options.size){const id=`opt-size-${p.category.replace(/\s+/g,'')}`;
-  return `<label class="visually-hidden" for="${id}">Size</label><select id="${id}" class="select size" aria-label="Choose size">${p.options.size.map(s=>`<option value="${s}">${s}</option>`).join('')}</select>`;}
-  return'';
-}
-function addOnBlock(p){
-  if(!p.addOns)return''; return `<fieldset class="addons"><legend class="visually-hidden">Add-ons</legend>${p.addOns.map(a=>`<label class="small"><input type="checkbox" value="${a.label}" data-price="${a.price}"> ${a.label} (+${a.price} kr)</label>`).join('<br>')}</fieldset>`;
-}
 
-/* Filters */
+/* ===== Filters ===== */
 filters.forEach(btn=>{
   btn.addEventListener('click', ()=>{
     filters.forEach(b=>{b.classList.remove('active');b.setAttribute('aria-pressed','false');});
@@ -192,7 +209,9 @@ filters.forEach(btn=>{
   });
 });
 
-/* Cart ops */
+/* ===== Cart ops ===== */
+function calcPrice(p,{size,addOns}){let base=p.price; if(p.optionPrice&&size){base=p.optionPrice.size[size]||base;} const extras=(addOns||[]).reduce((s,a)=>s+(a.price||0),0); return base+extras;}
+
 function addToCartFromCard(card, idx){
   const prod=ITEMS.filter(i=>state.filter==='All'||i.category===state.filter)[idx];
   const qty=Math.max(1,parseInt(card.querySelector('.qty-input')?.value||'1',10));
@@ -206,7 +225,7 @@ function addToCartFromCard(card, idx){
   if(existing){existing.qty+=qty;}else{state.cart.push(item);}
   persist(); renderCart(); bumpCartCount(); announce.textContent=`${qty} × ${item.product}${item.variant?` (${item.variant})`:''} added to cart.`;
 }
-function calcPrice(p,{size,addOns}){let base=p.price; if(p.optionPrice&&size){base=p.optionPrice.size[size]||base;} const extras=(addOns||[]).reduce((s,a)=>s+(a.price||0),0); return base+extras;}
+
 function renderCart(){
   cartItemsEl.innerHTML=''; let subtotal=0;
   state.cart.forEach((ci,i)=>{
@@ -233,7 +252,7 @@ function renderCart(){
 function bumpCartCount(){cartCountEl.textContent=state.cart.reduce((s,i)=>s+i.qty,0);}
 function persist(){localStorage.setItem('cc_cart',JSON.stringify(state.cart));}
 
-/* Drawer + a11y */
+/* ===== Drawer (cart) + a11y ===== */
 function openDrawer(){lastFocusedTrigger=document.activeElement; cartDrawer.hidden=false; document.body.style.overflow='hidden'; cartBtn.setAttribute('aria-expanded','true'); const f=cartDrawer.querySelector('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])'); f&&f.focus&&f.focus();}
 function closeDrawer(){cartDrawer.hidden=true; document.body.style.overflow=''; cartBtn.setAttribute('aria-expanded','false'); lastFocusedTrigger&&lastFocusedTrigger.focus&&lastFocusedTrigger.focus();}
 cartBtn.addEventListener('click',openDrawer);
@@ -249,7 +268,7 @@ document.addEventListener('keydown',e=>{
   }
 });
 
-/* Input persistence */
+/* ===== Input persistence ===== */
 notesEl.value=state.notes; nameEl.value=state.name; dateEl.value=state.date; timeEl.value=state.time;
 notesEl.addEventListener('input',()=>localStorage.setItem('cc_notes',notesEl.value));
 nameEl.addEventListener('input',()=>{localStorage.setItem('cc_name',nameEl.value);updateCheckoutState();});
@@ -257,18 +276,19 @@ dateEl.addEventListener('change',()=>{localStorage.setItem('cc_date',dateEl.valu
 timeEl.addEventListener('change',()=>{localStorage.setItem('cc_time',timeEl.value);updateCheckoutState();});
 function updateCheckoutState(){checkoutBtn.disabled=!(state.cart.length && nameEl.value.trim() && dateEl.value && timeEl.value);}
 
-/* Clear cart */
+/* ===== Clear cart ===== */
 clearBtn.addEventListener('click',()=>{state.cart=[];persist();renderCart();bumpCartCount();announce.textContent='Cart cleared.';});
 
-/* Delegated add */
+/* ===== Delegated add ===== */
 grid.addEventListener('click',e=>{
   const add=e.target.closest('.add'); if(!add) return;
   const card=add.closest('.card'); const relIdx=parseInt(add.dataset.idx,10);
   addToCartFromCard(card,relIdx);
 });
 
-/* Checkout */
-checkoutBtn.addEventListener('click', ()=>{
+/* ===== Checkout ===== */
+const cartItemsEl2 = cartItemsEl; // reuse reference
+document.getElementById('checkout').addEventListener('click', ()=>{
   if(checkoutBtn.disabled) return;
   const notes=encodeURIComponent(document.getElementById('orderNotes').value||'');
   const name=encodeURIComponent(nameEl.value.trim());
@@ -281,5 +301,5 @@ checkoutBtn.addEventListener('click', ()=>{
   return openWhatsApp(msg);
 });
 
-/* Init */
+/* ===== Init ===== */
 renderMenu(); renderCart(); bumpCartCount(); updateCheckoutState();
