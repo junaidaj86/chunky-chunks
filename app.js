@@ -1,44 +1,76 @@
 /**
  * Chunky Chunks — ultra-light JS cart + WhatsApp checkout (no deps)
- *
- * ▶ Configure your WhatsApp number in international format (no + symbol):
- *   Example: const WHATSAPP_NUMBER = '46701234567';
- *   Replace the placeholder below.
- *
- * This bundle intentionally stays small (<30KB) and defers execution.
+ * Device-aware WhatsApp router + Google Drive-hosted assets.
  */
 
-const WHATSAPP_NUMBER = '46767427167';
+/* ============================
+   WhatsApp routing
+============================ */
+const WHATSAPP_NUMBER = '46767427167'; 
+const WNUM = String(WHATSAPP_NUMBER || '').replace(/\D/g, '');
 
-// ---- Data model (source of truth) -----------------------------------------
-// Categories and SKUs with simple pricing (you can edit freely)
+function isMobileLike() {
+  const ua = navigator.userAgent || '';
+  const mobileUA = /Android|Mobi|iPhone|iPad|iPod|Windows Phone/i.test(ua);
+  const iPadDesktopMode = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+  return mobileUA || iPadDesktopMode;
+}
+function whatsappBaseUrl() {
+  return isMobileLike()
+    ? `https://wa.me/${WNUM}`
+    : `https://web.whatsapp.com/send?phone=${WNUM}`;
+}
+/** Open WhatsApp (optionally with an encoded message) */
+window.openWhatsApp = function openWhatsApp(encodedMsg) {
+  if (!WNUM) { alert('WhatsApp number is not configured.'); return false; }
+  const base = whatsappBaseUrl();
+  const url = encodedMsg
+    ? (base.includes('web.whatsapp.com') ? `${base}&text=${encodedMsg}` : `${base}?text=${encodedMsg}`)
+    : base;
+  window.open(url, '_blank', 'noopener');
+  return false; // allow <a onclick="return openWhatsApp()"> to prevent default
+};
+
+/* ============================
+   Google Drive assets
+============================ */
+const DRIVE_ASSETS = {
+  logo:       '1hUBagr0wfEC0-kY_a58Q7C69_2b28Elt',
+  tiramisu:   '1lo6vtFa6QREzQKT1ohnt6aes5fAMDH-4',
+  cookies:    '17xVUGLArlc0b584gnuo2DJH5W2uXf7wX',
+  cheesecake: '1ha5_f4_3Lr8FF9ituY8wHnTlkStcBmg1',
+  loaf:       '1f5J-yf29bSNWfs8PZFAMOVWwWGA9y0fQ',
+  brownie:    '1-LBYsgWt4Q6hV0F_bxE9UdNUMtl3th1U',
+  muffins:    '1Urq0AnkDzj5QZVQPPYT0RenPnmbyJqOq'
+};
+const driveUrl   = id => `https://drive.usercontent.google.com/download?id=${id}&export=view`;
+const driveThumb = id => `https://drive.google.com/thumbnail?id=${id}&sz=w1200`;
+
+/* ============================
+   Catalog (source of truth)
+============================ */
 const ITEMS = [
-  { category:'Tiramisu', name:'Tiramisu', price:120, image:'tiramisu.webp', variants:['Classic','Biscoff'] },
-  { category:'Cookies', name:'Cookies', price:25, image:'cookies.webp', variants:['Chocolate Chip','Double Chocolate','Red Velvet'] },
-  { category:'Cheesecakes', name:'Cheesecake', price:60, image:'cheesecake.webp', variants:['Blueberry','Strawberry','Biscoff','Lemon','Plain','Zebra'], options:{ size:['Mini','Regular'] }, optionPrice:{ size:{ 'Mini':60, 'Regular':220 } } },
-  { category:'Loaf Cake', name:'Loaf Cake', price:90, image:'loaf.webp', variants:['Orange'] },
-  { category:'Brownie', name:'Brownie', price:40, image:'brownie.webp', variants:['Classic Fudgy'], addOns:[{label:'Walnuts', price:10},{label:'Extra Chocolate', price:10},{label:'Biscoff Crumble', price:10}] },
-  { category:'Muffins', name:'Muffins', price:30, image:'muffins.webp', variants:['Walnut','Plain','Double Chocolate','Nutella','Peanut Butter','Biscoff','Salted Caramel','Oreo','Lemon','Chocolate','Blueberry','Banana'] }
+  { category:'Tiramisu',    name:'Tiramisu',    price:120, image:'tiramisu.webp',    remoteId: DRIVE_ASSETS.tiramisu,   variants:['Classic','Biscoff'] },
+  { category:'Cookies',     name:'Cookies',     price:25,  image:'cookies.webp',     remoteId: DRIVE_ASSETS.cookies,    variants:['Chocolate Chip','Double Chocolate','Red Velvet'] },
+  { category:'Cheesecakes', name:'Cheesecake',  price:60,  image:'cheesecake.webp',  remoteId: DRIVE_ASSETS.cheesecake, variants:['Blueberry','Strawberry','Biscoff','Lemon','Plain','Zebra'], options:{ size:['Mini','Regular'] }, optionPrice:{ size:{ 'Mini':60, 'Regular':220 } } },
+  { category:'Loaf Cake',   name:'Loaf Cake',   price:90,  image:'loaf.webp',        remoteId: DRIVE_ASSETS.loaf,       variants:['Orange'] },
+  { category:'Brownie',     name:'Brownie',     price:40,  image:'brownie.webp',     remoteId: DRIVE_ASSETS.brownie,    variants:['Classic Fudgy'], addOns:[{label:'Walnuts', price:10},{label:'Extra Chocolate', price:10},{label:'Biscoff Crumble', price:10}] },
+  { category:'Muffins',     name:'Muffins',     price:30,  image:'muffins.webp',     remoteId: DRIVE_ASSETS.muffins,    variants:['Walnut','Plain','Double Chocolate','Nutella','Peanut Butter','Biscoff','Salted Caramel','Oreo','Lemon','Chocolate','Blueberry','Banana'] }
 ];
 
-// Simple, tiny placeholder (inline SVG -> data URI) if an image is missing
+// ultra-tiny placeholder (inline SVG) for last-resort fallback
 const PLACEHOLDER = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" width="640" height="480">
-    <defs>
-      <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#FFF7F3"/>
-        <stop offset="100%" stop-color="#F3E3DC"/>
-      </linearGradient>
-    </defs>
+    <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FFF7F3"/><stop offset="100%" stop-color="#F3E3DC"/></linearGradient></defs>
     <rect width="100%" height="100%" fill="url(#g)"/>
-    <g fill="#6B3A2E" opacity="0.5">
-      <circle cx="540" cy="-20" r="180"/>
-    </g>
+    <g fill="#6B3A2E" opacity="0.5"><circle cx="540" cy="-20" r="180"/></g>
     <text x="32" y="56" font-family="Georgia, serif" font-size="32" fill="#6B3A2E">Chunky Chunks</text>
     <text x="32" y="96" font-family="Inter, system-ui" font-size="18" fill="#2F2320">Delicious bakery placeholder</text>
   </svg>`);
 
-// Persisted state
+/* ============================
+   App state & DOM
+============================ */
 const state = {
   filter: 'All',
   cart: JSON.parse(localStorage.getItem('cc_cart')||'[]'),
@@ -48,7 +80,6 @@ const state = {
   time: localStorage.getItem('cc_time')||''
 };
 
-// DOM cache
 const grid = document.getElementById('menuGrid');
 const filters = document.querySelectorAll('.filter');
 const cartBtn = document.getElementById('openCart');
@@ -65,10 +96,29 @@ const dateEl = document.getElementById('pickupDate');
 const timeEl = document.getElementById('pickupTime');
 const announce = document.getElementById('announce');
 
-// Accessibility: return focus target when closing drawer
 let lastFocusedTrigger = null;
 
-// ---- Render menu -----------------------------------------------------------
+/* ============================
+   Rendering helpers
+============================ */
+function imageTagFor(prod){
+  if (prod.remoteId) {
+    const src = driveUrl(prod.remoteId);
+    const fb  = driveThumb(prod.remoteId); // thumbnail fallback if Drive throttles
+    return `<img src="${src}" alt="${prod.name}" width="480" height="360"
+                loading="lazy" decoding="async"
+                onerror="this.onerror=null;this.src='${fb}'" />`;
+  }
+  const webp = `images/${prod.image.replace('.png','.webp')}`;
+  const png  = `images/${prod.image.replace('.webp','.png')}`;
+  return `<picture>
+            <source srcset="${webp}" type="image/webp"/>
+            <img src="${png}" alt="${prod.name}" width="480" height="360"
+                 loading="lazy" decoding="async"
+                 onerror="this.src='${PLACEHOLDER}'" />
+          </picture>`;
+}
+
 function renderMenu(){
   grid.innerHTML = '';
   const data = ITEMS.filter(i => state.filter==='All' || i.category===state.filter);
@@ -78,10 +128,7 @@ function renderMenu(){
     card.className = 'card';
     card.innerHTML = `
       <div class="media">
-        <picture>
-          <source srcset="images/${prod.image.replace('.png','.webp')}" type="image/webp"/>
-          <img src="images/${prod.image.replace('.webp','.png')}" alt="${prod.name}" width="480" height="360" loading="lazy" decoding="async" onerror="this.src='${PLACEHOLDER}'" />
-        </picture>
+        ${imageTagFor(prod)}
       </div>
       <div class="body">
         <h3>${prod.name} <span class="small">(${prod.category})</span></h3>
@@ -136,14 +183,15 @@ function optionBlock(prod){
 
 function addOnBlock(prod){
   if(!prod.addOns) return '';
-  const id = `addons-${prod.category.replace(/\s+/g,'')}`;
   return `<fieldset class="addons">
     <legend class="visually-hidden">Add-ons</legend>
-    ${prod.addOns.map((a,i)=>`<label class="small"><input type="checkbox" value="${a.label}" data-price="${a.price}"> ${a.label} (+${a.price} kr)</label>`).join('<br>')}
+    ${prod.addOns.map(a=>`<label class="small"><input type="checkbox" value="${a.label}" data-price="${a.price}"> ${a.label} (+${a.price} kr)</label>`).join('<br>')}
   </fieldset>`;
 }
 
-// ---- Filters ---------------------------------------------------------------
+/* ============================
+   Filters
+============================ */
 filters.forEach(btn=>{
   btn.addEventListener('click', ()=>{
     filters.forEach(b=>b.classList.remove('active'));
@@ -155,7 +203,9 @@ filters.forEach(btn=>{
   });
 });
 
-// ---- Cart ops --------------------------------------------------------------
+/* ============================
+   Cart ops
+============================ */
 function addToCartFromCard(card, idx){
   const prod = ITEMS.filter(i => state.filter==='All' || i.category===state.filter)[idx];
   const qty = Math.max(1, parseInt(card.querySelector('.qty-input')?.value || '1', 10));
@@ -164,18 +214,13 @@ function addToCartFromCard(card, idx){
   const addOns = [...card.querySelectorAll('.addons input:checked')].map(c=>({label:c.value, price:+c.dataset.price}));
 
   const unitPrice = calcPrice(prod, {size, addOns});
-
   const item = { product: prod.name, category: prod.category, variant, size, addOns, qty, unitPrice };
 
-  // merge if same product/variant/size/addOns signature
   const key = JSON.stringify({p:item.product,v:item.variant,s:item.size,a:item.addOns.map(a=>a.label).sort()});
   const existing = state.cart.find(ci => JSON.stringify({p:ci.product,v:ci.variant,s:ci.size,a:ci.addOns.map(a=>a.label).sort()}) === key);
-  if(existing){ existing.qty += qty; }
-  else { state.cart.push(item); }
+  if(existing){ existing.qty += qty; } else { state.cart.push(item); }
 
-  persist();
-  renderCart();
-  bumpCartCount();
+  persist(); renderCart(); bumpCartCount();
   announce.textContent = `${qty} × ${item.product}${item.variant?` (${item.variant})`:''} added to cart.`;
 }
 
@@ -229,14 +274,15 @@ function persist(){
   localStorage.setItem('cc_cart', JSON.stringify(state.cart));
 }
 
-// ---- Drawer, focus trap, validation --------------------------------------
+/* ============================
+   Drawer, a11y & validation
+============================ */
 function openDrawer(){
   lastFocusedTrigger = document.activeElement;
   cartDrawer.hidden = false;
   document.body.style.overflow = 'hidden';
   cartBtn.setAttribute('aria-expanded','true');
-  // Move focus inside
-  const focusable = cartDrawer.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+  const focusable = cartDrawer.querySelector('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])');
   (focusable && focusable.focus && focusable.focus());
 }
 function closeDrawer(){
@@ -245,16 +291,14 @@ function closeDrawer(){
   cartBtn.setAttribute('aria-expanded','false');
   lastFocusedTrigger && lastFocusedTrigger.focus && lastFocusedTrigger.focus();
 }
-
-cartBtn.addEventListener('click',()=>{openDrawer();});
-closeCartBtn.addEventListener('click',()=>{closeDrawer();});
+cartBtn.addEventListener('click',openDrawer);
+closeCartBtn.addEventListener('click',closeDrawer);
 cartDrawer.addEventListener('click',e=>{ if(e.target.classList.contains('drawer-backdrop')) closeDrawer(); });
 
 document.addEventListener('keydown',e=>{
   if(!cartDrawer.hidden && e.key==='Escape'){ closeDrawer(); }
   if(!cartDrawer.hidden && e.key==='Tab'){
-    // basic focus trap
-    const f = cartDrawer.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    const f = cartDrawer.querySelectorAll('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])');
     if(!f.length) return;
     const first = f[0], last = f[f.length-1];
     if(e.shiftKey && document.activeElement===first){ last.focus(); e.preventDefault(); }
@@ -277,7 +321,9 @@ clearBtn.addEventListener('click',()=>{
   state.cart = []; persist(); renderCart(); bumpCartCount(); announce.textContent = 'Cart cleared.';
 });
 
-// ---- Event delegation: add to cart buttons --------------------------------
+/* ============================
+   Delegation & checkout
+============================ */
 grid.addEventListener('click', (e)=>{
   const add = e.target.closest('.add');
   if(!add) return;
@@ -286,13 +332,13 @@ grid.addEventListener('click', (e)=>{
   addToCartFromCard(card, relIdx);
 });
 
-// ---- Checkout to WhatsApp -------------------------------------------------
 checkoutBtn.addEventListener('click', ()=>{
   if(checkoutBtn.disabled) return;
-  const isDesktop = !/Mobi|Android/i.test(navigator.userAgent);
+
   const notes = encodeURIComponent(document.getElementById('orderNotes').value || '');
-  const name = encodeURIComponent(nameEl.value.trim());
-  const date = dateEl.value; const time = timeEl.value;
+  const name  = encodeURIComponent(nameEl.value.trim());
+  const date  = dateEl.value; 
+  const time  = timeEl.value;
 
   const lines = state.cart.map(i=>{
     const v = i.variant ? ` (${i.variant})` : '';
@@ -302,59 +348,13 @@ checkoutBtn.addEventListener('click', ()=>{
   }).join('%0A');
 
   const msg = `Hi Chunky Chunks! I'd like to order:%0A${lines}%0ANotes: ${notes}%0AName: ${name}%0APreferred pickup: ${date} ${time}`;
-
-  const base = isDesktop ? `https://web.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${msg}` : `https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`;
-  window.open(base, '_blank', 'noopener');
+  return openWhatsApp(msg); // desktop/mobile routed automatically
 });
 
-// ---- Init -----------------------------------------------------------------
+/* ============================
+   Init
+============================ */
 renderMenu();
 renderCart();
 bumpCartCount();
 updateCheckoutState();
-
-const WNUM = String(WHATSAPP_NUMBER || '').replace(/\D/g, '');
-// Heuristic: treat iPad desktop-mode as mobile-capable for wa.me deep link
-function isMobileLike() {
-  const ua = navigator.userAgent || '';
-  const mobileUA = /Android|Mobi|iPhone|iPad|iPod|Windows Phone/i.test(ua);
-  const iPadDesktopMode = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
-  return mobileUA || iPadDesktopMode;
-}
-
-// Build base URL based on device
-function whatsappBaseUrl() {
-  return isMobileLike()
-    ? `https://wa.me/${WNUM}`
-    : `https://web.whatsapp.com/send?phone=${WNUM}`;
-}
-/**
- * Open WhatsApp in a new tab/window.
- * @param {string=} encodedMsg - Optional pre-encoded message (use encodeURIComponent).
- * @returns {boolean} Always false to allow `onclick="return openWhatsApp(...)"` to prevent default.
- */
-window.openWhatsApp = function openWhatsApp(encodedMsg) {
-  if (!WNUM) { alert('WhatsApp number is not configured.'); return false; }
-  const base = whatsappBaseUrl();
-  const url = encodedMsg
-    ? (base.includes('web.whatsapp.com') ? `${base}&text=${encodedMsg}` : `${base}?text=${encodedMsg}`)
-    : base;
-  window.open(url, '_blank', 'noopener');
-  return false; // prevents default navigation when used from onclick
-};
-
-// Also update header CTA to use configured number
-// const whatsHeader = document.getElementById('whatsAppHeader');
-// if(whatsHeader && WHATSAPP_NUMBER && !WHATSAPP_NUMBER.includes('{{')){
-//   whatsHeader.href = `https://wa.me/${WHATSAPP_NUMBER}`;
-// }
-
-function wireWhatsAppCTAs() {
-  if (!WNUM) return;
-  const isDesktop = !/Mobi|Android/i.test(navigator.userAgent);
-  const href = isDesktop
-    ? `https://web.whatsapp.com/send?phone=${WNUM}`
-    : `https://wa.me/${WNUM}`;
-  document.querySelectorAll('[data-wa]').forEach(a => a.href = href);
-}
-window.addEventListener('DOMContentLoaded', wireWhatsAppCTAs);
