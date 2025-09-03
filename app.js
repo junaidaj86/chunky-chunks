@@ -27,25 +27,26 @@ if(navToggle && primaryNav){
 /* Drive assets */
 const DRIVE_ASSETS = {
   logo:'1hUBagr0wfEC0-kY_a58Q7C69_2b28Elt',
-  tiramisu:'1lo6vtFa6QREzQKT1ohnt6aes5fAMDH-4',
+  tiramisu:'1djX1RpV651iw35dr1_Ky9yTCYlPw6r56',
   cookies:'1bwOV_h8JBjxgnc9zvOqI2Ppr_Sfhofzi', // new
   cheesecake:'1vG60IWKZafSiKC9GK-8mDROnpY76wz0b', // new
-  loaf:'1f5J-yf29bSNWfs8PZFAMOVWwWGA9y0fQ',
-  brownie:'1-LBYsgWt4Q6hV0F_bxE9UdNUMtl3th1U',
-  muffins:'1Urq0AnkDzj5QZVQPPYT0RenPnmbyJqOq'
+  loaf:'1v1yNMJRJfyANYsFJLkLUEfanEszes0_t',
+  brownie:'1sWr5j7ZzBdf4Be1bBEz6p8Q3fPwoe-tl',
+  muffins:'17JmI6A0dLVsd70LnH60UBabjaKmup4PG'
 };
 
+
 const driveUrl   = id => `https://drive.usercontent.google.com/download?id=${id}&export=view`;
-const driveThumb = id => `https://drive.google.com/thumbnail?id=${id}&sz=w1200`;
+const driveThumb = id => `https://drive.usercontent.google.com/download?id=${id}&export=view`;
 
 /* Catalog */
 const ITEMS = [
-  { category:'Tiramisu',    name:'Tiramisu',    price:129, image:'tiramisu.webp',    remoteId:DRIVE_ASSETS.tiramisu,   variants:['Classic','Biscoff'] },
-  { category:'Cookies',     name:'Cookies',     price:20,  image:'cookies.webp',     remoteId:DRIVE_ASSETS.cookies,    variants:['Chocolate Chip','Double Chocolate','Red Velvet'] },
-  { category:'Cheesecakes', name:'Cheesecake',  price:25,  image:'cheesecake.webp',  remoteId:DRIVE_ASSETS.cheesecake, variants:['Blueberry','Strawberry','Biscoff','Lemon','Plain','Zebra'], options:{ size:['Mini','Regular'] }, optionPrice:{ size:{ 'Mini':60, 'Regular':220 } } },
-  { category:'Loaf Cake',   name:'Loaf Cake',   price:100,  image:'loaf.webp',        remoteId:DRIVE_ASSETS.loaf,       variants:['Orange'] },
-  { category:'Brownie',     name:'Brownie',     price:25,  image:'brownie.webp',     remoteId:DRIVE_ASSETS.brownie,    variants:['Classic Fudgy'], addOns:[{label:'Walnuts',price:10},{label:'Extra Chocolate',price:10},{label:'Biscoff Crumble',price:10}] },
-  { category:'Muffins',     name:'Muffins',     price:25,  image:'muffins.webp',     remoteId:DRIVE_ASSETS.muffins,    variants:['Walnut','Plain','Double Chocolate','Nutella','Peanut Butter','Biscoff','Salted Caramel','Oreo','Lemon','Chocolate','Blueberry','Banana'] }
+  { category:'Tiramisu',    name:'Tiramisu',    price:129, image:DRIVE_ASSETS.tiramisu,    remoteId:DRIVE_ASSETS.tiramisu,   variants:['Classic','Biscoff'] },
+  { category:'Cookies',     name:'Cookies',     price:20,  image:DRIVE_ASSETS.cookies,     remoteId:DRIVE_ASSETS.cookies,    variants:['Chocolate Chip','Double Chocolate','Red Velvet'] },
+  { category:'Cheesecakes', name:'Cheesecake',  price:25,  image:DRIVE_ASSETS.cheesecake,  remoteId:DRIVE_ASSETS.cheesecake, variants:['Blueberry','Strawberry','Biscoff','Lemon','Plain'], options:{ size:['Mini','Regular', 'Full'] }, optionPrice:{ size:{ 'Mini':25, 'Regular':75, 'Full':250 } } },
+  { category:'Loaf Cake',   name:'Loaf Cake',   price:100,  image:DRIVE_ASSETS.loaf,        remoteId:DRIVE_ASSETS.loaf,       variants:['Orange', 'Zebra', 'Vanilla', 'Chocolate'] },
+  { category:'Brownie',     name:'Brownie',     price:25,  image:DRIVE_ASSETS.brownie,     remoteId:DRIVE_ASSETS.brownie,    variants:['Classic Fudgy', 'Walnuts', 'Double Chocolate', 'Biscoff', 'Oreo', 'Salted Caramel', 'Peanut Butter', 'Nutella'] },
+  { category:'Muffins',     name:'Muffins',     price:25,  image:DRIVE_ASSETS.muffins,     remoteId:DRIVE_ASSETS.muffins,    variants:['Vanilla','Double Chocolate','Blueberry','Banana'] }
 ];
 
 /* Placeholder */
@@ -80,17 +81,62 @@ const announce=document.getElementById('announce');
 let lastFocusedTrigger=null;
 
 /* Rendering */
+
+
 function imageTagFor(prod){
+  // Prefer cookie-less endpoint; keep thumbnail as secondary.
+  const driveUrl   = id => `https://drive.google.com/uc?export=view&id=${id}`;
+  const driveThumb = id => `https://drive.google.com/thumbnail?id=${id}&sz=w1200`;
+  const localWebp = `images/${(prod.image||'').replace('.png','.webp')}`;
+  const localPng  = `images/${(prod.image||'').replace('.webp','.png')}`;
+
   if (prod.remoteId) {
-    const driveImageUrl = `https://drive.usercontent.google.com/download?id=${prod.remoteId}&export=view`;
-    const driveThumbnailUrl = `https://drive.google.com/thumbnail?id=${prod.remoteId}&sz=w1200`;
-    return `<img src="${driveImageUrl}" alt="${prod.name}" width="480" height="360" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${driveThumbnailUrl}';this.onerror=null;this.src='${PLACEHOLDER}';" />`;
-  }else if (prod.image) {
-    const webp = `images/${prod.image.replace('.png','.webp')}`;
-    const png = `images/${prod.image.replace('.webp','.png')}`;
-    return `<picture><source srcset="${webp}" type="image/webp"/><img src="${png}" alt="${prod.name}" width="480" height="360" loading="lazy" decoding="async" onerror="this.src='${PLACEHOLDER}'"/></picture>`;
+    const primary = driveUrl(prod.remoteId);
+    const fb1 = driveThumb(prod.remoteId);
+
+    // IMPORTANT: chain fallbacks via nested onerror functions (not sequential statements).
+    return `
+      <img
+        src="${primary}"
+        alt="${prod.name}"
+        width="480" height="360"
+        loading="lazy" decoding="async"
+        referrerpolicy="no-referrer"
+        onerror="
+          this.onerror=null;
+          this.src='${fb1}';
+          this.onerror=function(){
+            this.onerror=null;
+            this.src='${localWebp}';
+            this.onerror=function(){
+              this.onerror=null;
+              this.src='${localPng}';
+              this.onerror=function(){ this.src='${PLACEHOLDER}'; };
+            };
+          };
+        "
+      />`;
   }
+
+  // No remoteId → use local assets with a final placeholder
+  if (prod.image) {
+    return `
+      <picture>
+        <source srcset="${localWebp}" type="image/webp"/>
+        <img
+          src="${localPng}"
+          alt="${prod.name}"
+          width="480" height="360"
+          loading="lazy" decoding="async"
+          onerror="this.onerror=null; this.src='${PLACEHOLDER}'"
+        />
+      </picture>`;
+  }
+
+  // Safety net
+  return `<img src="${PLACEHOLDER}" alt="${prod?.name||'Item'}" width="480" height="360" loading="lazy" decoding="async"/>`;
 }
+
 function renderMenu(){
   grid.innerHTML='';
   const data=ITEMS.filter(i=>state.filter==='All'||i.category===state.filter);
