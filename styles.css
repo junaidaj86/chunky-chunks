@@ -143,6 +143,23 @@ header{
 @media (min-width:560px){.grid{grid-template-columns:repeat(2,1fr)}}
 @media (min-width:900px){.grid{grid-template-columns:repeat(3,1fr)}}
 
+/* Close (✕) button inside nav drawer */
+.nav-close {
+  color: var(--cocoa) !important;
+  -webkit-text-fill-color: var(--cocoa);
+}
+
+/* Cart item controls (+ / − / Remove) */
+.item-controls button {
+  border:1px solid #e3d3cc;
+  background:#fff;
+  border-radius:8px;
+  padding:6px 10px;
+  color: var(--cocoa) !important;            /* brown text/icons */
+  -webkit-text-fill-color: var(--cocoa);     /* override iOS blue */
+}
+
+
 /* ===== Filter chips ===== */
 .filters{display:flex;gap:8px;overflow-x:auto;padding:8px 0 6px;margin:10px 0 12px;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}
 .filters::-webkit-scrollbar{display:none}

@@ -329,7 +329,18 @@ function renderCart(){
         <button class="inc" aria-label="Increase quantity">＋</button>
         <button class="del" aria-label="Remove item">Remove</button>
       </div>`;
-    li.querySelector('.dec').addEventListener('click',()=>{ci.qty=Math.max(1,ci.qty-1);persist();renderCart();bumpCartCount();});
+    li.querySelector('.dec').addEventListener('click',()=>{
+  // Find min for this product (with size if cheesecake)
+  let min = 1;
+  if (ci.category === 'Cheesecakes') {
+    min = (MIN_ORDER['Cheesecakes'][ci.size] || 1);
+  } else {
+    min = (MIN_ORDER[ci.category] || 1);
+  }
+  ci.qty = Math.max(min, ci.qty - 1);
+  persist(); renderCart(); bumpCartCount();
+});
+
     li.querySelector('.inc').addEventListener('click',()=>{ci.qty+=1;persist();renderCart();bumpCartCount();});
     li.querySelector('.del').addEventListener('click',()=>{state.cart.splice(i,1);persist();renderCart();bumpCartCount();announce.textContent='Item removed.';});
     subtotal+=ci.qty*ci.unitPrice; cartItemsEl.appendChild(li);
