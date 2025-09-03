@@ -40,12 +40,12 @@ const driveThumb = id => `https://drive.google.com/thumbnail?id=${id}&sz=w1200`;
 
 /* Catalog */
 const ITEMS = [
-  { category:'Tiramisu',    name:'Tiramisu',    price:120, image:'tiramisu.webp',    remoteId:DRIVE_ASSETS.tiramisu,   variants:['Classic','Biscoff'] },
-  { category:'Cookies',     name:'Cookies',     price:25,  image:'cookies.webp',     remoteId:DRIVE_ASSETS.cookies,    variants:['Chocolate Chip','Double Chocolate','Red Velvet'] },
-  { category:'Cheesecakes', name:'Cheesecake',  price:60,  image:'cheesecake.webp',  remoteId:DRIVE_ASSETS.cheesecake, variants:['Blueberry','Strawberry','Biscoff','Lemon','Plain','Zebra'], options:{ size:['Mini','Regular'] }, optionPrice:{ size:{ 'Mini':60, 'Regular':220 } } },
-  { category:'Loaf Cake',   name:'Loaf Cake',   price:90,  image:'loaf.webp',        remoteId:DRIVE_ASSETS.loaf,       variants:['Orange'] },
-  { category:'Brownie',     name:'Brownie',     price:40,  image:'brownie.webp',     remoteId:DRIVE_ASSETS.brownie,    variants:['Classic Fudgy'], addOns:[{label:'Walnuts',price:10},{label:'Extra Chocolate',price:10},{label:'Biscoff Crumble',price:10}] },
-  { category:'Muffins',     name:'Muffins',     price:30,  image:'muffins.webp',     remoteId:DRIVE_ASSETS.muffins,    variants:['Walnut','Plain','Double Chocolate','Nutella','Peanut Butter','Biscoff','Salted Caramel','Oreo','Lemon','Chocolate','Blueberry','Banana'] }
+  { category:'Tiramisu',    name:'Tiramisu',    price:129, image:'tiramisu.webp',    remoteId:DRIVE_ASSETS.tiramisu,   variants:['Classic','Biscoff'] },
+  { category:'Cookies',     name:'Cookies',     price:20,  image:'cookies.webp',     remoteId:DRIVE_ASSETS.cookies,    variants:['Chocolate Chip','Double Chocolate','Red Velvet'] },
+  { category:'Cheesecakes', name:'Cheesecake',  price:25,  image:'cheesecake.webp',  remoteId:DRIVE_ASSETS.cheesecake, variants:['Blueberry','Strawberry','Biscoff','Lemon','Plain','Zebra'], options:{ size:['Mini','Regular'] }, optionPrice:{ size:{ 'Mini':60, 'Regular':220 } } },
+  { category:'Loaf Cake',   name:'Loaf Cake',   price:100,  image:'loaf.webp',        remoteId:DRIVE_ASSETS.loaf,       variants:['Orange'] },
+  { category:'Brownie',     name:'Brownie',     price:25,  image:'brownie.webp',     remoteId:DRIVE_ASSETS.brownie,    variants:['Classic Fudgy'], addOns:[{label:'Walnuts',price:10},{label:'Extra Chocolate',price:10},{label:'Biscoff Crumble',price:10}] },
+  { category:'Muffins',     name:'Muffins',     price:25,  image:'muffins.webp',     remoteId:DRIVE_ASSETS.muffins,    variants:['Walnut','Plain','Double Chocolate','Nutella','Peanut Butter','Biscoff','Salted Caramel','Oreo','Lemon','Chocolate','Blueberry','Banana'] }
 ];
 
 /* Placeholder */
@@ -99,7 +99,7 @@ function renderMenu(){
     card.innerHTML=`
       <div class="media">${imageTagFor(prod)}</div>
       <div class="body">
-        <h3>${prod.name} <span class="small">(${prod.category})</span></h3>
+        <h3>${prod.name}</h3>
         <p class="small">${descFor(prod)}</p>
         <div class="small price">from ${prod.price} kr</div>
         ${variantSelect(prod)}${optionBlock(prod)}${addOnBlock(prod)}
