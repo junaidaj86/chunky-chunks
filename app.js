@@ -1,16 +1,33 @@
 /**
  * Chunky Chunks — mobile-first UI, WhatsApp router, Drive-hosted assets.
+ * This build enforces Minimum Order Quantities (MOQ) per item (and per-size for cheesecakes).
  */
 
-/* WhatsApp routing */
-const WHATSAPP_NUMBER = '46767427167';
+/* ===== Minimum order quantities ===== */
+const MIN_ORDER = {
+  Tiramisu: 1,
+  Cookies: 5,
+  'Brownie': 4,
+  'Muffins': 4,
+  'Loaf Cake': 1,
+  'Cheesecakes': { Mini: 5, Regular: 2, Full: 1 } // cheesecake by size
+};
+
+/* ===== WhatsApp routing ===== */
+const WHATSAPP_NUMBER = '919901644319';
 const WNUM = String(WHATSAPP_NUMBER || '').replace(/\D/g, '');
-function isMobileLike(){const ua=navigator.userAgent||'';return /Android|Mobi|iPhone|iPad|iPod|Windows Phone/i.test(ua) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);}
-function whatsappBaseUrl(){return isMobileLike()?`https://wa.me/${WNUM}`:`https://web.whatsapp.com/send?phone=${WNUM}`;}
+function isMobileLike(){
+  const ua = navigator.userAgent || '';
+  return /Android|Mobi|iPhone|iPad|iPod|Windows Phone/i.test(ua)
+      || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+function whatsappBaseUrl(){ return isMobileLike() ? `https://wa.me/${WNUM}` : `https://web.whatsapp.com/send?phone=${WNUM}`; }
 window.openWhatsApp = function(encodedMsg){
-  if(!WNUM){alert('WhatsApp number is not configured.');return false;}
+  if(!WNUM){ alert('WhatsApp number is not configured.'); return false; }
   const base = whatsappBaseUrl();
-  const url = encodedMsg ? (base.includes('web.whatsapp.com')?`${base}&text=${encodedMsg}`:`${base}?text=${encodedMsg}`) : base;
+  const url = encodedMsg
+    ? (base.includes('web.whatsapp.com') ? `${base}&text=${encodedMsg}` : `${base}?text=${encodedMsg}`)
+    : base;
   window.open(url,'_blank','noopener'); return false;
 };
 
@@ -31,23 +48,14 @@ function closeNav(){
   navToggle && navToggle.setAttribute('aria-expanded','false');
   document.body.style.overflow = '';
 }
-
 if(navToggle && primaryNav){
   navToggle.addEventListener('click', () => {
     primaryNav.classList.contains('open') ? closeNav() : openNav();
   });
 }
 navClose && navClose.addEventListener('click', closeNav);
-
-/* Close when clicking any link inside nav (mobile) */
-primaryNav && primaryNav.addEventListener('click', (e) => {
-  if(e.target.closest('a')) closeNav();
-});
-
-/* Close on Escape */
-document.addEventListener('keydown', (e) => {
-  if(e.key === 'Escape' && primaryNav && primaryNav.classList.contains('open')) closeNav();
-});
+primaryNav && primaryNav.addEventListener('click', (e) => { if(e.target.closest('a')) closeNav(); });
+document.addEventListener('keydown', (e) => { if(e.key === 'Escape' && primaryNav && primaryNav.classList.contains('open')) closeNav(); });
 
 /* ===== Drive assets ===== */
 const DRIVE_ASSETS = {
@@ -66,9 +74,13 @@ const driveThumb = id => `https://drive.usercontent.google.com/download?id=${id}
 const ITEMS = [
   { category:'Tiramisu',    name:'Tiramisu',    price:129, image:DRIVE_ASSETS.tiramisu,    remoteId:DRIVE_ASSETS.tiramisu,   variants:['Classic','Biscoff'] },
   { category:'Cookies',     name:'Cookies',     price:20,  image:DRIVE_ASSETS.cookies,     remoteId:DRIVE_ASSETS.cookies,    variants:['Chocolate Chip','Double Chocolate','Red Velvet'] },
-  { category:'Cheesecakes', name:'Cheesecake',  price:25,  image:DRIVE_ASSETS.cheesecake,  remoteId:DRIVE_ASSETS.cheesecake, variants:['Blueberry','Strawberry','Biscoff','Lemon','Plain'], options:{ size:['Mini','Regular', 'Full'] }, optionPrice:{ size:{ 'Mini':25, 'Regular':75, 'Full':250 } } },
-  { category:'Loaf Cake',   name:'Loaf Cake',   price:100, image:DRIVE_ASSETS.loaf,        remoteId:DRIVE_ASSETS.loaf,       variants:['Orange', 'Zebra', 'Vanilla', 'Chocolate'] },
-  { category:'Brownie',     name:'Brownie',     price:25,  image:DRIVE_ASSETS.brownie,     remoteId:DRIVE_ASSETS.brownie,    variants:['Classic Fudgy', 'Walnuts', 'Double Chocolate', 'Biscoff', 'Oreo', 'Salted Caramel', 'Peanut Butter', 'Nutella'] },
+  { category:'Cheesecakes', name:'Cheesecake',  price:25,  image:DRIVE_ASSETS.cheesecake,  remoteId:DRIVE_ASSETS.cheesecake,
+    variants:['Blueberry','Strawberry','Biscoff','Lemon','Plain'],
+    options:{ size:['Mini','Regular','Full'] },
+    optionPrice:{ size:{ 'Mini':25, 'Regular':75, 'Full':250 } }
+  },
+  { category:'Loaf Cake',   name:'Loaf Cake',   price:100, image:DRIVE_ASSETS.loaf,        remoteId:DRIVE_ASSETS.loaf,       variants:['Orange','Zebra','Vanilla','Chocolate'] },
+  { category:'Brownie',     name:'Brownie',     price:25,  image:DRIVE_ASSETS.brownie,     remoteId:DRIVE_ASSETS.brownie,    variants:['Classic Fudgy','Walnuts','Double Chocolate','Biscoff','Oreo','Salted Caramel','Peanut Butter','Nutella'] },
   { category:'Muffins',     name:'Muffins',     price:25,  image:DRIVE_ASSETS.muffins,     remoteId:DRIVE_ASSETS.muffins,    variants:['Vanilla','Double Chocolate','Blueberry','Banana'] }
 ];
 
@@ -105,7 +117,6 @@ let lastFocusedTrigger=null;
 
 /* ===== Rendering ===== */
 function imageTagFor(prod){
-  // Prefer cookie-less endpoint; keep thumbnail as secondary.
   const driveUrlX   = id => `https://drive.google.com/uc?export=view&id=${id}`;
   const driveThumbX = id => `https://drive.google.com/thumbnail?id=${id}&sz=w1200`;
   const localWebp = `images/${(prod.image||'').replace('.png','.webp')}`;
@@ -162,24 +173,46 @@ function descFor(p){
   if(p.category==='Muffins')return'Moist bakery-style muffins with multiple flavors.';
   return'Freshly baked goodness.';
 }
+
 function variantSelect(p){
   if(!p.variants)return''; const opts=p.variants.map(v=>`<option value="${v}">${v}</option>`).join('');
   const id=`var-${p.category.replace(/\s+/g,'')}`;
   return `<label class="visually-hidden" for="${id}">Variant</label><select id="${id}" class="select variant" aria-label="Choose variant">${opts}</select>`;
 }
 function optionBlock(p){
-  if(!p.options)return''; if(p.options.size){const id=`opt-size-${p.category.replace(/\s+/g,'')}`;
-  return `<label class="visually-hidden" for="${id}">Size</label><select id="${id}" class="select size" aria-label="Choose size">${p.options.size.map(s=>`<option value="${s}">${s}</option>`).join('')}</select>`;}
+  if(!p.options)return'';
+  if(p.options.size){
+    const id=`opt-size-${p.category.replace(/\s+/g,'')}`;
+    return `<label class="visually-hidden" for="${id}">Size</label><select id="${id}" class="select size" aria-label="Choose size">${p.options.size.map(s=>`<option value="${s}">${s}</option>`).join('')}</select>`;
+  }
   return'';
 }
+
+/* Compute min qty for a product, optionally using a size */
+function minQtyFor(prod, sizeIfAny){
+  if(prod.category === 'Cheesecakes'){
+    const size = sizeIfAny || (prod.options?.size?.[0] || 'Mini');
+    return (MIN_ORDER['Cheesecakes'][size] || 1);
+  }
+  return (MIN_ORDER[prod.category] || 1);
+}
+
 function addOnBlock(p){
-  if(!p.addOns)return''; return `<fieldset class="addons"><legend class="visually-hidden">Add-ons</legend>${p.addOns.map(a=>`<label class="small"><input type="checkbox" value="${a.label}" data-price="${a.price}"> ${a.label} (+${a.price} kr)</label>`).join('<br>')}</fieldset>`;
+  if(!p.addOns)return'';
+  return `<fieldset class="addons">
+    <legend class="visually-hidden">Add-ons</legend>
+    ${p.addOns.map(a=>`<label class="small"><input type="checkbox" value="${a.label}" data-price="${a.price}"> ${a.label} (+${a.price} kr)</label>`).join('<br>')}
+  </fieldset>`;
 }
 
 function renderMenu(){
   grid.innerHTML='';
   const data=ITEMS.filter(i=>state.filter==='All'||i.category===state.filter);
   data.forEach((prod,idx)=>{
+    // Determine initial size (for cheesecake) and min qty
+    const initialSize = (prod.category === 'Cheesecakes') ? (prod.options?.size?.[0] || 'Mini') : '';
+    const minQty = minQtyFor(prod, initialSize);
+
     const card=document.createElement('article'); card.className='card';
     card.innerHTML=`
       <div class="media">${imageTagFor(prod)}</div>
@@ -188,10 +221,12 @@ function renderMenu(){
         <p class="small">${descFor(prod)}</p>
         <div class="small price">from ${prod.price} kr</div>
         ${variantSelect(prod)}${optionBlock(prod)}${addOnBlock(prod)}
+        <div class="small" data-min-hint><em>Minimum order: ${minQty}</em></div>
         <div class="controls">
           <div class="qty">
             <label class="visually-hidden" for="qty-${idx}">Quantity</label>
-            <input id="qty-${idx}" class="qty-input" type="number" inputmode="numeric" min="1" step="1" value="1" aria-label="Quantity" />
+            <input id="qty-${idx}" class="qty-input" type="number" inputmode="numeric"
+              min="${minQty}" step="1" value="${minQty}" aria-label="Quantity" />
           </div>
           <button class="add" data-idx="${idx}">Add to Order</button>
         </div>
@@ -209,23 +244,75 @@ filters.forEach(btn=>{
   });
 });
 
-/* ===== Cart ops ===== */
-function calcPrice(p,{size,addOns}){let base=p.price; if(p.optionPrice&&size){base=p.optionPrice.size[size]||base;} const extras=(addOns||[]).reduce((s,a)=>s+(a.price||0),0); return base+extras;}
+/* ===== Price calc ===== */
+function calcPrice(p,{size,addOns}){
+  let base=p.price;
+  if(p.optionPrice && size){ base = p.optionPrice.size[size] || base; }
+  const extras=(addOns||[]).reduce((s,a)=>s+(a.price||0),0);
+  return base+extras;
+}
 
-function addToCartFromCard(card, idx){
-  const prod=ITEMS.filter(i=>state.filter==='All'||i.category===state.filter)[idx];
-  const qty=Math.max(1,parseInt(card.querySelector('.qty-input')?.value||'1',10));
-  const variant=card.querySelector('.variant')?.value||prod.variants?.[0]||'';
-  const size=card.querySelector('.size')?.value||'';
-  const addOns=[...card.querySelectorAll('.addons input:checked')].map(c=>({label:c.value,price:+c.dataset.price}));
-  const unitPrice=calcPrice(prod,{size,addOns});
-  const item={product:prod.name,category:prod.category,variant,size,addOns,qty,unitPrice};
+/* ===== Cart ops ===== */
+function addToCartFromCard(card, relIdx){
+  const visible = ITEMS.filter(i=>state.filter==='All'||i.category===state.filter);
+  const prod = visible[relIdx];
+
+  // Selected fields
+  const qtyInput = card.querySelector('.qty-input');
+  let qty = Math.max(1, parseInt(qtyInput?.value||'1', 10));
+  const variant = card.querySelector('.variant')?.value || prod.variants?.[0] || '';
+  const size = card.querySelector('.size')?.value || (prod.category==='Cheesecakes' ? (prod.options?.size?.[0] || 'Mini') : '');
+  const addOns = [...card.querySelectorAll('.addons input:checked')].map(c=>({label:c.value,price:+c.dataset.price}));
+
+  // Enforce MOQ
+  const enforcedMin = minQtyFor(prod, size);
+  if (qty < enforcedMin) {
+    qty = enforcedMin;
+    if (qtyInput) {
+      qtyInput.min = String(enforcedMin);
+      qtyInput.value = String(enforcedMin);
+    }
+  }
+
+  const unitPrice = calcPrice(prod, {size,addOns});
+  const item = {product:prod.name,category:prod.category,variant,size,addOns,qty,unitPrice};
+
   const key=JSON.stringify({p:item.product,v:item.variant,s:item.size,a:item.addOns.map(a=>a.label).sort()});
   const existing=state.cart.find(ci=>JSON.stringify({p:ci.product,v:ci.variant,s:ci.size,a:ci.addOns.map(a=>a.label).sort()})===key);
   if(existing){existing.qty+=qty;}else{state.cart.push(item);}
-  persist(); renderCart(); bumpCartCount(); announce.textContent=`${qty} × ${item.product}${item.variant?` (${item.variant})`:''} added to cart.`;
+
+  persist(); renderCart(); bumpCartCount();
+  announce.textContent=`${qty} × ${item.product}${item.variant?` (${item.variant})`:''}${item.size?` [${item.size}]`:''} added to cart.`;
 }
 
+/* ===== Cheesecake size → dynamic MOQ binding =====
+   When user changes size, update the card's quantity min/value and the "Minimum order" hint. */
+grid.addEventListener('change', (e) => {
+  const sizeSel = e.target.closest('.size');
+  if(!sizeSel) return;
+  const card = sizeSel.closest('.card');
+  if(!card) return;
+
+  // Identify product from current visible list
+  const title = card.querySelector('h3')?.textContent?.trim();
+  const prod = ITEMS.find(p => p.name === title) || null;
+  if(!prod) return;
+
+  const newSize = sizeSel.value;
+  const newMin = minQtyFor(prod, newSize);
+
+  const qtyInput = card.querySelector('.qty-input');
+  if(qtyInput){
+    qtyInput.min = String(newMin);
+    if(parseInt(qtyInput.value || '0',10) < newMin){
+      qtyInput.value = String(newMin);
+    }
+  }
+  const hint = card.querySelector('[data-min-hint]');
+  if(hint){ hint.innerHTML = `<em>Minimum order: ${newMin}</em>`; }
+});
+
+/* ===== Cart render / persistence ===== */
 function renderCart(){
   cartItemsEl.innerHTML=''; let subtotal=0;
   state.cart.forEach((ci,i)=>{
@@ -287,8 +374,7 @@ grid.addEventListener('click',e=>{
 });
 
 /* ===== Checkout ===== */
-const cartItemsEl2 = cartItemsEl; // reuse reference
-document.getElementById('checkout').addEventListener('click', ()=>{
+checkoutBtn.addEventListener('click', ()=>{
   if(checkoutBtn.disabled) return;
   const notes=encodeURIComponent(document.getElementById('orderNotes').value||'');
   const name=encodeURIComponent(nameEl.value.trim());
