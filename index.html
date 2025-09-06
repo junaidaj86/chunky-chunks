@@ -3,86 +3,43 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <title>Chunky Chunks — Home-baked desserts in Stockholm | Tiramisu, Cookies, Cheesecakes, Brownies, Muffins</title>
-  <meta name="description" content="Chunky Chunks is a home-bakery in Stockholm. Small-batch tiramisu, cheesecakes, cookies, brownies, muffins. Order fast on WhatsApp." />
-  <link rel="canonical" href="https://www.chunkychunks.shop/" />
-  <meta name="robots" content="index,follow" />
+  <title>Chunky Chunks | Because every bake has a story to tell.</title>
+  <meta name="description" content="Chunky Chunks — small-batch, home-baked desserts in Stockholm. Tiramisu, cookies, cheesecakes, brownies, muffins. Order fast on WhatsApp." />
   <meta name="theme-color" content="#FFF7F3" />
 
   <!-- Open Graph / Twitter -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://www.chunkychunks.shop/" />
-  <meta property="og:title" content="Chunky Chunks — Home-baked desserts in Stockholm" />
-  <meta property="og:description" content="Handcrafted tiramisu, cheesecakes, cookies, brownies, and more. Order via WhatsApp." />
-  <meta property="og:image" content="https://www.chunkychunks.shop/images/og.webp" />
+  <meta property="og:title" content="Chunky Chunks — Because every bake has a story to tell." />
+  <meta property="og:description" content="Home-baked in Stockholm. Order tiramisu, cheesecakes, cookies, brownies, and more via WhatsApp." />
+  <meta property="og:image" content="images/og.webp" />
   <meta name="twitter:card" content="summary_large_image" />
 
-  <!-- Performance -->
+  <!-- Fonts (optional) -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="preload" as="image" href="https://www.chunkychunks.shop/images/hero.webp" fetchpriority="high" />
 
-  <!-- PWA / Assets -->
-  <link rel="manifest" href="/manifest.webmanifest">
-  <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/styles.css" />
+  <!-- Manifest / Favicon -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml" />
 
-  <!-- Structured Data: Bakery + WebSite -->
+  <!-- Site CSS -->
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- JSON-LD -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Bakery",
-        "@id": "https://www.chunkychunks.shop/#bakery",
-        "name": "Chunky Chunks",
-        "image": "https://www.chunkychunks.shop/images/og.webp",
-        "address": {
-          "@type":"PostalAddress",
-          "streetAddress":"bergengatan 10",
-          "postalCode":"16435",
-          "addressLocality":"Stockholm",
-          "addressCountry":"SE"
-        },
-        "servesCuisine":"Desserts",
-        "telephone":"+46767427167",
-        "sameAs":["https://instagram.com/chunkychunks25"],
-        "url":"https://www.chunkychunks.shop/"
-      },
-      {
-        "@type":"WebSite",
-        "@id":"https://www.chunkychunks.shop/#website",
-        "url":"https://www.chunkychunks.shop/",
-        "name":"Chunky Chunks",
-        "publisher":{"@id":"https://www.chunkychunks.shop/#bakery"},
-        "potentialAction":{
-          "@type":"ContactAction",
-          "target":"https://wa.me/46767427167",
-          "name":"Order on WhatsApp"
-        }
-      }
-    ]
-  }
-  </script>
-
-  <!-- Structured Data: FAQPage -->
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@type":"FAQPage",
-    "mainEntity":[
-      {"@type":"Question","name":"How should I store the desserts?","acceptedAnswer":{"@type":"Answer","text":"Refrigerate tiramisu and cheesecakes. Cookies and brownies keep at room temperature in an airtight container."}},
-      {"@type":"Question","name":"What is the shelf life?","acceptedAnswer":{"@type":"Answer","text":"Tiramisu and cheesecakes: 2–3 days chilled. Cookies and brownies: 3–5 days in airtight storage."}},
-      {"@type":"Question","name":"Allergen info?","acceptedAnswer":{"@type":"Answer","text":"Nuts, gluten, and dairy may be present. Please ask for details before ordering."}},
-      {"@type":"Question","name":"Lead time?","acceptedAnswer":{"@type":"Answer","text":"Most orders require 24–48 hours. Larger or custom orders may require longer."}},
-      {"@type":"Question","name":"Can you customize?","acceptedAnswer":{"@type":"Answer","text":"Yes—flavor tweaks and decorations on request, subject to feasibility."}}
-    ]
+    "@type": "Bakery",
+    "name": "Chunky Chunks",
+    "image": "images/og.webp",
+    "address": {"@type":"PostalAddress","addressLocality":"Stockholm","addressCountry":"SE"},
+    "servesCuisine": "Desserts",
+    "sameAs": ["https://instagram.com/chunkychunks25"],
+    "telephone": "+46767427167"
   }
   </script>
 </head>
-
 
 <body>
   <a class="visually-hidden" href="#menu">Skip to menu</a>
@@ -255,7 +212,7 @@
     </div>
   </div>
 
-  <div id="announce" class="visually-hidden" aria-live="polite"></div>
+  <div id="announce" aria-live="polite"></div>
 
   <!-- App JS -->
   <script src="app.js" defer></script>

@@ -282,7 +282,8 @@ function addToCartFromCard(card, relIdx){
   if(existing){existing.qty+=qty;}else{state.cart.push(item);}
 
   persist(); renderCart(); bumpCartCount();
-  announce.textContent=`${qty} × ${item.product}${item.variant?` (${item.variant})`:''}${item.size?` [${item.size}]`:''} added to cart.`;
+  //announce.textContent=`${qty} × ${item.product}${item.variant?` (${item.variant})`:''}${item.size?` [${item.size}]`:''} added to cart.`;
+  announceAdded(item);
 }
 
 /* ===== Cheesecake size → dynamic MOQ binding =====
@@ -342,8 +343,7 @@ function renderCart(){
 });
 
     li.querySelector('.inc').addEventListener('click',()=>{ci.qty+=1;persist();renderCart();bumpCartCount();});
-    li.querySelector('.del').addEventListener('click',()=>{state.cart.splice(i,1);persist();renderCart();bumpCartCount();announce.textContent='Item removed.';});
-    subtotal+=ci.qty*ci.unitPrice; cartItemsEl.appendChild(li);
+    li.querySelector('.del').addEventListener('click',()=>{state.cart.splice(i,1);persist();renderCart();bumpCartCount();showAnnounce('Item removed.','warn');});    subtotal+=ci.qty*ci.unitPrice; cartItemsEl.appendChild(li);
   });
   subtotalEl.textContent=`${subtotal} kr`; updateCheckoutState();
 }
@@ -375,8 +375,7 @@ timeEl.addEventListener('change',()=>{localStorage.setItem('cc_time',timeEl.valu
 function updateCheckoutState(){checkoutBtn.disabled=!(state.cart.length && nameEl.value.trim() && dateEl.value && timeEl.value);}
 
 /* ===== Clear cart ===== */
-clearBtn.addEventListener('click',()=>{state.cart=[];persist();renderCart();bumpCartCount();announce.textContent='Cart cleared.';});
-
+clearBtn.addEventListener('click',()=>{state.cart=[];persist();renderCart();bumpCartCount();showAnnounce('Cart cleared.','warn');});
 /* ===== Delegated add ===== */
 grid.addEventListener('click',e=>{
   const add=e.target.closest('.add'); if(!add) return;
@@ -397,6 +396,33 @@ checkoutBtn.addEventListener('click', ()=>{
   const msg=`Hi Chunky Chunks! I'd like to order:%0A${lines}%0ANotes: ${notes}%0AName: ${name}%0APreferred pickup: ${date} ${time}`;
   return openWhatsApp(msg);
 });
+
+/* ===== Announce / Toast utilities ===== */
+function showAnnounce(message, variant = 'info', ttlMs = 1800){
+  if(!announce) return;
+  // ARIA: ensure screen readers pick it up
+  announce.setAttribute('role','status'); // polite live region already in HTML
+  announce.classList.remove('success','info','warn'); // reset variants
+  if(variant) announce.classList.add(variant);
+
+  announce.textContent = message;
+  announce.classList.add('show');
+
+  clearTimeout(showAnnounce._t);
+  showAnnounce._t = setTimeout(() => {
+    announce.classList.remove('show');
+    // Delay content clear to avoid cutting off SR announcement too fast
+    setTimeout(() => { announce.textContent = ''; }, 250);
+  }, ttlMs);
+}
+
+function announceAdded(item){
+  const { qty, product, variant, size } = item;
+  const v = variant ? ` (${variant})` : '';
+  const s = size ? ` [${size}]` : '';
+  showAnnounce(`${qty} × ${product}${v}${s} added to cart.`, 'success');
+}
+
 
 /* ===== Init ===== */
 renderMenu(); renderCart(); bumpCartCount(); updateCheckoutState();

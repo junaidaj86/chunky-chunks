@@ -232,3 +232,40 @@ header{
 @media(prefers-reduced-motion:reduce){
   .card{transition:none}
 }
+
+/* ===== Announce / Toast ===== */
+#announce{
+  position: fixed;
+  inset: auto 12px calc(16px + env(safe-area-inset-bottom)) 12px; /* bottom, full responsive */
+  z-index: 2000;
+  background: rgba(47,35,32,.96); /* var(--ink) on darkened backdrop */
+  color: #fff;
+  padding: 12px 14px;
+  border-radius: 12px;
+  box-shadow: 0 8px 18px rgba(0,0,0,.25);
+  font-size: .95rem;
+  line-height: 1.3;
+  pointer-events: none;           /* non-interactive toast */
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity .18s ease, transform .18s ease;
+}
+#announce.show{
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (min-width: 560px){
+  #announce{
+    max-width: 420px;
+    margin-left: auto;            /* right-align on larger viewports */
+  }
+}
+@media (prefers-reduced-motion: reduce){
+  #announce{ transition: none; }
+}
+
+/* Optional variant colors */
+#announce.success{ background: rgba(45, 129, 78, .96); }   /* green */
+#announce.info{    background: rgba(47,35,32,.96); }       /* default */
+#announce.warn{    background: rgba(168,107,85,.96); }     /* mocha tone */
+
