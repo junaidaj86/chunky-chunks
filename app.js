@@ -166,7 +166,7 @@ function imageTagFor(prod){
 
 function descFor(p){
   if(p.category==='Tiramisu')return'Hand-layered mascarpone cream with espresso-soaked sponge; also in Biscoff.';
-  if(p.category==='Cookies')return'Thick, gooey center with premium chocolate.';
+  if(p.category==='Cookies')return'Thick, gooey center with premium quality chocolate.';
   if(p.category==='Cheesecakes')return'Silky baked cheesecake in Mini or Regular; multiple flavors.';
   if(p.category==='Loaf Cake')return'Soft orange loaf with citrus glaze.';
   if(p.category==='Brownie')return'Classic fudgy brownie; optional add-ons.';
