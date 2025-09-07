@@ -194,6 +194,14 @@ function minQtyFor(prod, sizeIfAny){
     const size = sizeIfAny || (prod.options?.size?.[0] || 'Mini');
     return (MIN_ORDER['Cheesecakes'][size] || 1);
   }
+  if(prod.category === 'Cheesecakes'){
+    const size = sizeIfAny || (prod.options?.size?.[0] || 'Regular');
+    return (MIN_ORDER['Cheesecakes'][size] || 1);
+  }
+  if(prod.category === 'Cheesecakes'){
+    const size = sizeIfAny || (prod.options?.size?.[0] || 'Full');
+    return (MIN_ORDER['Cheesecakes'][size] || 1);
+  }
   return (MIN_ORDER[prod.category] || 1);
 }
 
@@ -209,9 +217,11 @@ function renderMenu(){
   grid.innerHTML='';
   const data=ITEMS.filter(i=>state.filter==='All'||i.category===state.filter);
   data.forEach((prod,idx)=>{
-    // Determine initial size (for cheesecake) and min qty
     const initialSize = (prod.category === 'Cheesecakes') ? (prod.options?.size?.[0] || 'Mini') : '';
     const minQty = minQtyFor(prod, initialSize);
+
+    // NEW: compute initial unit price based on selected/default size
+    const initialPrice = calcPrice(prod, { size: initialSize, addOns: [] });
 
     const card=document.createElement('article'); card.className='card';
     card.innerHTML=`
@@ -219,7 +229,10 @@ function renderMenu(){
       <div class="body">
         <h3>${prod.name}</h3>
         <p class="small">${descFor(prod)}</p>
-        <div class="small price">from ${prod.price} kr</div>
+
+        <!-- CHANGED: live price target with data-price -->
+        <div class="small price" data-price>${initialPrice} kr</div>
+
         ${variantSelect(prod)}${optionBlock(prod)}${addOnBlock(prod)}
         <div class="small" data-min-hint><em>Minimum order: ${minQty}</em></div>
         <div class="controls">
@@ -233,8 +246,9 @@ function renderMenu(){
       </div>`;
     grid.appendChild(card);
   });
-bindPopMove();
+  bindPopMove();
 }
+
 
 /* ===== Filters ===== */
 filters.forEach(btn=>{
@@ -291,28 +305,39 @@ function addToCartFromCard(card, relIdx){
    When user changes size, update the card's quantity min/value and the "Minimum order" hint. */
 grid.addEventListener('change', (e) => {
   const sizeSel = e.target.closest('.size');
-  if(!sizeSel) return;
+  if(!sizeSel) {
+    // OPTIONAL: if you later add paid add-ons for other products, keep price in sync
+    const addOnChanged = e.target.closest('.addons');
+    if(addOnChanged){
+      const card = e.target.closest('.card');
+      const title = card?.querySelector('h3')?.textContent?.trim();
+      const prod = ITEMS.find(p => p.name === title) || null;
+      if(prod){ updateCardPrice(card, prod); }
+    }
+    return;
+  }
+
   const card = sizeSel.closest('.card');
   if(!card) return;
-
-  // Identify product from current visible list
   const title = card.querySelector('h3')?.textContent?.trim();
   const prod = ITEMS.find(p => p.name === title) || null;
   if(!prod) return;
 
+  // MOQ refresh (existing behavior)
   const newSize = sizeSel.value;
   const newMin = minQtyFor(prod, newSize);
-
   const qtyInput = card.querySelector('.qty-input');
   if(qtyInput){
     qtyInput.min = String(newMin);
-    if(parseInt(qtyInput.value || '0',10) < newMin){
-      qtyInput.value = String(newMin);
-    }
+    qtyInput.value = String(newMin);
   }
   const hint = card.querySelector('[data-min-hint]');
   if(hint){ hint.innerHTML = `<em>Minimum order: ${newMin}</em>`; }
+
+  // NEW: price refresh
+  updateCardPrice(card, prod);
 });
+
 
 /* ===== Cart render / persistence ===== */
 function renderCart(){
@@ -473,6 +498,13 @@ function bindPopMove(){
   });
 }
 
+function updateCardPrice(card, prod){
+  const size = card.querySelector('.size')?.value || (prod.category==='Cheesecakes' ? (prod.options?.size?.[0] || 'Mini') : '');
+  const addOns = [...card.querySelectorAll('.addons input:checked')].map(c=>({label:c.value, price:+c.dataset.price}));
+  const unit = calcPrice(prod, { size, addOns });
+  const target = card.querySelector('[data-price]');
+  if(target){ target.textContent = `${unit} kr`; }
+}
 
 /* ===== Init ===== */
 renderMenu(); renderCart(); bumpCartCount(); updateCheckoutState();
