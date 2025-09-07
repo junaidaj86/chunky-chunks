@@ -75,6 +75,10 @@
           <li><a href="#faq">FAQ</a></li>
         </ul>
       </nav>
+      <button id="openCart" class="cart-btn" aria-haspopup="dialog" aria-controls="cartDrawer" aria-expanded="false">
+        <span class="cart-label">Cart</span>
+        <span id="cartCount" class="badge">0</span>
+      </button>
     </div>
   </header>
 
@@ -169,9 +173,9 @@
   </main>
 
   <!-- Floating Cart Button -->
-  <button id="openCart" class="fab" aria-haspopup="dialog" aria-controls="cartDrawer" aria-expanded="false">
+  <!-- <button id="openCart" class="fab" aria-haspopup="dialog" aria-controls="cartDrawer" aria-expanded="false">
     Cart <span id="cartCount" class="badge">0</span>
-  </button>
+  </button> -->
 
   <!-- Order Drawer (Modal) -->
   <div id="cartDrawer" class="drawer" role="dialog" aria-modal="true" aria-labelledby="cartTitle" aria-describedby="cartDesc" hidden>
