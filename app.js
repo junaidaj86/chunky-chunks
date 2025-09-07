@@ -170,7 +170,7 @@ function descFor(p){
   if(p.category==='Cheesecakes')return'Silky baked cheesecake in Mini or Regular; multiple flavors.';
   if(p.category==='Loaf Cake')return'Soft orange loaf with citrus glaze.';
   if(p.category==='Brownie')return'Classic fudgy brownie; optional add-ons.';
-  if(p.category==='Muffins')return'Moist bakery-style muffins with multiple flavors.';
+  if(p.category==='Muffins')return'Moist muffins with multiple flavors.';
   return'Freshly baked goodness.';
 }
 
@@ -233,6 +233,7 @@ function renderMenu(){
       </div>`;
     grid.appendChild(card);
   });
+bindPopMove();
 }
 
 /* ===== Filters ===== */
@@ -421,6 +422,55 @@ function announceAdded(item){
   const v = variant ? ` (${variant})` : '';
   const s = size ? ` [${size}]` : '';
   showAnnounce(`${qty} × ${product}${v}${s} added to cart.`, 'success');
+}
+
+/* === Pop & Move binder === */
+function bindPopMove(){
+  const MAX_SHIFT = 14; // px of translation at edges
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const nodes = document.querySelectorAll('.card .media');
+
+  nodes.forEach((el) => {
+    if (el._popBound) return;  // idempotent
+    el._popBound = true;
+
+    const img = el.querySelector('img');
+    if (!img) return;
+
+    // Pointer enter: enable scale
+    const onEnter = () => el.classList.add('is-tilting');
+
+    // Pointer move: translate image toward pointer
+    const onMove = (e) => {
+      if (reduceMotion) return; // keep it simple if reduced motion
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;  // -0.5..0.5
+      const y = (e.clientY - r.top)  / r.height - 0.5; // -0.5..0.5
+      img.style.setProperty('--tx', `${(x * MAX_SHIFT).toFixed(1)}px`);
+      img.style.setProperty('--ty', `${(y * MAX_SHIFT).toFixed(1)}px`);
+    };
+
+    // Pointer leave: reset transform
+    const onLeave = () => {
+      el.classList.remove('is-tilting');
+      img.style.removeProperty('--tx');
+      img.style.removeProperty('--ty');
+      img.style.removeProperty('--sc');
+    };
+
+    // Touch friendly: tap = quick pop without move
+    const onTouchStart = () => { el.classList.add('is-tilting'); };
+    const onTouchEnd   = onLeave;
+
+    el.addEventListener('pointerenter', onEnter);
+    el.addEventListener('pointermove',  onMove);
+    el.addEventListener('pointerleave', onLeave);
+
+    // Mobile fallbacks
+    el.addEventListener('touchstart', onTouchStart, { passive: true });
+    el.addEventListener('touchend',   onTouchEnd,   { passive: true });
+    el.addEventListener('touchcancel',onTouchEnd,   { passive: true });
+  });
 }
 
 

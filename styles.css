@@ -264,8 +264,31 @@ header{
   #announce{ transition: none; }
 }
 
-/* Optional variant colors */
-#announce.success{ background: rgba(45, 129, 78, .96); }   /* green */
-#announce.info{    background: rgba(47,35,32,.96); }       /* default */
-#announce.warn{    background: rgba(168,107,85,.96); }     /* mocha tone */
+/* Optional variant colors (aligned with cocoa/mocha theme) */
+#announce.success { background: rgba(107, 58, 46, .96); }  /* cocoa */
+#announce.info    { background: rgba(107, 58, 46, .96); }   /* ink */
+#announce.warn    { background: rgba(107, 58, 46, .96); } /* mocha */
 
+
+/* === Pop & Move (2D) === */
+.card .media {
+  position: relative; /* already set in your CSS; safe to repeat */
+  overflow: hidden;   /* keeps image within card radius */
+}
+
+.card .media img {
+  transform: translate(var(--tx, 0px), var(--ty, 0px)) scale(var(--sc, 1));
+  transition: transform .16s ease, box-shadow .16s ease;
+  will-change: transform;
+}
+
+/* when active/hovering, scale up a bit */
+.card .media.is-tilting img {
+  --sc: 1.06;
+  box-shadow: 0 10px 24px rgba(107,58,46,.18); /* subtle lift */
+}
+
+/* reduce motion fallback */
+@media (prefers-reduced-motion: reduce){
+  .card .media img { transition: none; }
+}
