@@ -72,15 +72,15 @@ const driveThumb = id => `https://drive.usercontent.google.com/download?id=${id}
 
 /* ===== Catalog ===== */
 const ITEMS = [
-  { category:'Tiramisu',    name:'Tiramisu',    price:129, image:DRIVE_ASSETS.tiramisu,    remoteId:DRIVE_ASSETS.tiramisu,   variants:['Classic','Biscoff'] },
+  { category:'Brownie',     name:'Brownie',     price:30,  image:DRIVE_ASSETS.brownie,     remoteId:DRIVE_ASSETS.brownie,    variants:['Classic Fudgy','Walnuts','Double Chocolate','Biscoff','Oreo','Salted Caramel','Peanut Butter','Nutella'] },
   { category:'Cookies',     name:'Cookies',     price:30,  image:DRIVE_ASSETS.cookies,     remoteId:DRIVE_ASSETS.cookies,    variants:['Chocolate Chip','Double Chocolate','Red Velvet'] },
+  { category:'Tiramisu',    name:'Tiramisu',    price:129, image:DRIVE_ASSETS.tiramisu,    remoteId:DRIVE_ASSETS.tiramisu,   variants:['Classic','Biscoff'] },
   { category:'Cheesecakes', name:'Cheesecake',  price:25,  image:DRIVE_ASSETS.cheesecake,  remoteId:DRIVE_ASSETS.cheesecake,
     variants:['Blueberry','Strawberry','Biscoff','Lemon','Plain'],
     options:{ size:['Mini','Regular','Full'] },
     optionPrice:{ size:{ 'Mini':25, 'Regular':75, 'Full':250 } }
   },
   { category:'Loaf Cake',   name:'Loaf Cake',   price:120, image:DRIVE_ASSETS.loaf,        remoteId:DRIVE_ASSETS.loaf,       variants:['Orange','Zebra','Vanilla','Chocolate'] },
-  { category:'Brownie',     name:'Brownie',     price:30,  image:DRIVE_ASSETS.brownie,     remoteId:DRIVE_ASSETS.brownie,    variants:['Classic Fudgy','Walnuts','Double Chocolate','Biscoff','Oreo','Salted Caramel','Peanut Butter','Nutella'] },
   { category:'Muffins',     name:'Muffins',     price:25,  image:DRIVE_ASSETS.muffins,     remoteId:DRIVE_ASSETS.muffins,    variants:['Vanilla','Double Chocolate','Blueberry','Banana'] }
 ];
 
