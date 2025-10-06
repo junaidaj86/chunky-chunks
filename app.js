@@ -7,6 +7,7 @@
 const MIN_ORDER = {
   Tiramisu: 1,
   Cookies: 5,
+  'Ande_ki_mithai': 4,
   'Brownie': 4,
   'Muffins': 4,
   'Loaf Cake': 1,
@@ -65,7 +66,8 @@ const DRIVE_ASSETS = {
   cheesecake:'1vG60IWKZafSiKC9GK-8mDROnpY76wz0b',
   loaf:'1v1yNMJRJfyANYsFJLkLUEfanEszes0_t',
   brownie:'1sWr5j7ZzBdf4Be1bBEz6p8Q3fPwoe-tl',
-  muffins:'17JmI6A0dLVsd70LnH60UBabjaKmup4PG'
+  muffins:'17JmI6A0dLVsd70LnH60UBabjaKmup4PG',
+  ande: '1aAIztkxhB9ROabR0paTpqQax_xvjZpFf'
 };
 const driveUrl   = id => `https://drive.usercontent.google.com/download?id=${id}&export=view`;
 const driveThumb = id => `https://drive.usercontent.google.com/download?id=${id}&export=view`;
@@ -80,6 +82,7 @@ const ITEMS = [
     options:{ size:['Mini','Regular','Full'] },
     optionPrice:{ size:{ 'Mini':25, 'Regular':75, 'Full':250 } }
   },
+  { category:'Ande_ki_mithai',    name:'Ande Ki Methai',    price:30, image:DRIVE_ASSETS.ande,    remoteId:DRIVE_ASSETS.ande,   variants:['Classic'] },
   { category:'Loaf Cake',   name:'Loaf Cake',   price:120, image:DRIVE_ASSETS.loaf,        remoteId:DRIVE_ASSETS.loaf,       variants:['Orange','Zebra','Vanilla','Chocolate'] },
   { category:'Muffins',     name:'Muffins',     price:25,  image:DRIVE_ASSETS.muffins,     remoteId:DRIVE_ASSETS.muffins,    variants:['Vanilla','Double Chocolate','Blueberry','Banana'] }
 ];
@@ -171,6 +174,7 @@ function descFor(p){
   if(p.category==='Loaf Cake')return'Soft orange loaf with citrus glaze.';
   if(p.category==='Brownie')return'Classic fudgy brownie; optional add-ons.';
   if(p.category==='Muffins')return'Moist muffins with multiple flavors.';
+  if(p.category==='Ande_ki_mithai')return'Popular Deccan sweet, which is dense, Brownie like consistency, melts in mouth';
   return'Freshly baked goodness.';
 }
 
