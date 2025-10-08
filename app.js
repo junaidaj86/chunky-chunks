@@ -15,7 +15,7 @@ const MIN_ORDER = {
 };
 
 /* ===== WhatsApp routing ===== */
-const WHATSAPP_NUMBER = '919901644319';
+const WHATSAPP_NUMBER = '46767427167';
 const WNUM = String(WHATSAPP_NUMBER || '').replace(/\D/g, '');
 function isMobileLike(){
   const ua = navigator.userAgent || '';
