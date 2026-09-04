@@ -1,17 +1,14 @@
 /**
  * Chunky Chunks — mobile-first UI, WhatsApp router, Drive-hosted assets.
- * This build enforces Minimum Order Quantities (MOQ) per item (and per-size for cheesecakes).
+ * This build enforces Minimum Order Quantities (MOQ) per item.
  */
 
 /* ===== Minimum order quantities ===== */
 const MIN_ORDER = {
   Tiramisu: 1,
   Cookies: 5,
-  'Ande_ki_mithai': 4,
   'Brownie': 4,
-  'Muffins': 4,
-  'Loaf Cake': 1,
-  'Cheesecakes': { Mini: 5, Regular: 2, Full: 1 } // cheesecake by size
+  'Cheesecakes': 4
 };
 
 /* ===== WhatsApp routing ===== */
@@ -64,10 +61,7 @@ const DRIVE_ASSETS = {
   tiramisu:'1djX1RpV651iw35dr1_Ky9yTCYlPw6r56',
   cookies:'1bwOV_h8JBjxgnc9zvOqI2Ppr_Sfhofzi',
   cheesecake:'1vG60IWKZafSiKC9GK-8mDROnpY76wz0b',
-  loaf:'1v1yNMJRJfyANYsFJLkLUEfanEszes0_t',
-  brownie:'1sWr5j7ZzBdf4Be1bBEz6p8Q3fPwoe-tl',
-  muffins:'17JmI6A0dLVsd70LnH60UBabjaKmup4PG',
-  ande: '1aAIztkxhB9ROabR0paTpqQax_xvjZpFf'
+  brownie:'1sWr5j7ZzBdf4Be1bBEz6p8Q3fPwoe-tl'
 };
 const driveUrl   = id => `https://drive.usercontent.google.com/download?id=${id}&export=view`;
 const driveThumb = id => `https://drive.usercontent.google.com/download?id=${id}&export=view`;
@@ -77,14 +71,9 @@ const ITEMS = [
   { category:'Brownie',     name:'Brownie',     price:30,  image:DRIVE_ASSETS.brownie,     remoteId:DRIVE_ASSETS.brownie,    variants:['Classic Fudgy','Walnuts','Double Chocolate','Biscoff','Oreo','Salted Caramel','Peanut Butter','Nutella'] },
   { category:'Cookies',     name:'Cookies',     price:30,  image:DRIVE_ASSETS.cookies,     remoteId:DRIVE_ASSETS.cookies,    variants:['Chocolate Chip','Double Chocolate','Red Velvet'] },
   { category:'Tiramisu',    name:'Tiramisu',    price:129, image:DRIVE_ASSETS.tiramisu,    remoteId:DRIVE_ASSETS.tiramisu,   variants:['Classic','Biscoff'] },
-  { category:'Cheesecakes', name:'Cheesecake',  price:25,  image:DRIVE_ASSETS.cheesecake,  remoteId:DRIVE_ASSETS.cheesecake,
-    variants:['Blueberry','Strawberry','Biscoff','Lemon','Plain'],
-    options:{ size:['Mini','Regular','Full'] },
-    optionPrice:{ size:{ 'Mini':25, 'Regular':75, 'Full':250 } }
-  },
-  { category:'Ande_ki_mithai',    name:'Ande Ki Methai',    price:30, image:DRIVE_ASSETS.ande,    remoteId:DRIVE_ASSETS.ande,   variants:['Classic'] },
-  { category:'Loaf Cake',   name:'Loaf Cake',   price:120, image:DRIVE_ASSETS.loaf,        remoteId:DRIVE_ASSETS.loaf,       variants:['Orange','Zebra','Vanilla','Chocolate'] },
-  { category:'Muffins',     name:'Muffins',     price:25,  image:DRIVE_ASSETS.muffins,     remoteId:DRIVE_ASSETS.muffins,    variants:['Vanilla','Double Chocolate','Blueberry','Banana'] }
+  { category:'Cheesecakes', name:'Cheesecake',  price:30,  image:DRIVE_ASSETS.cheesecake,  remoteId:DRIVE_ASSETS.cheesecake,
+    variants:['Blueberry','Strawberry','Biscoff','Lemon','Plain']
+  }
 ];
 
 /* ===== Placeholder (local fallback) ===== */
@@ -170,11 +159,8 @@ function imageTagFor(prod){
 function descFor(p){
   if(p.category==='Tiramisu')return'Hand-layered mascarpone cream with espresso-soaked sponge; also in Biscoff.';
   if(p.category==='Cookies')return'Thick, gooey center with premium quality chocolate.';
-  if(p.category==='Cheesecakes')return'Silky baked cheesecake in Mini or Regular; multiple flavors.';
-  if(p.category==='Loaf Cake')return'Soft orange loaf with citrus glaze.';
+  if(p.category==='Cheesecakes')return'Silky baked cheesecake; multiple flavors.';
   if(p.category==='Brownie')return'Classic fudgy brownie; optional add-ons.';
-  if(p.category==='Muffins')return'Moist muffins with multiple flavors.';
-  if(p.category==='Ande_ki_mithai')return'Popular Deccan sweet, which is dense, Brownie like consistency, melts in mouth';
   return'Freshly baked goodness.';
 }
 
@@ -193,19 +179,7 @@ function optionBlock(p){
 }
 
 /* Compute min qty for a product, optionally using a size */
-function minQtyFor(prod, sizeIfAny){
-  if(prod.category === 'Cheesecakes'){
-    const size = sizeIfAny || (prod.options?.size?.[0] || 'Mini');
-    return (MIN_ORDER['Cheesecakes'][size] || 1);
-  }
-  if(prod.category === 'Cheesecakes'){
-    const size = sizeIfAny || (prod.options?.size?.[0] || 'Regular');
-    return (MIN_ORDER['Cheesecakes'][size] || 1);
-  }
-  if(prod.category === 'Cheesecakes'){
-    const size = sizeIfAny || (prod.options?.size?.[0] || 'Full');
-    return (MIN_ORDER['Cheesecakes'][size] || 1);
-  }
+function minQtyFor(prod){
   return (MIN_ORDER[prod.category] || 1);
 }
 
@@ -221,8 +195,8 @@ function renderMenu(){
   grid.innerHTML='';
   const data=ITEMS.filter(i=>state.filter==='All'||i.category===state.filter);
   data.forEach((prod,idx)=>{
-    const initialSize = (prod.category === 'Cheesecakes') ? (prod.options?.size?.[0] || 'Mini') : '';
-    const minQty = minQtyFor(prod, initialSize);
+    const initialSize = '';
+    const minQty = minQtyFor(prod);
 
     // NEW: compute initial unit price based on selected/default size
     const initialPrice = calcPrice(prod, { size: initialSize, addOns: [] });
@@ -280,11 +254,11 @@ function addToCartFromCard(card, relIdx){
   const qtyInput = card.querySelector('.qty-input');
   let qty = Math.max(1, parseInt(qtyInput?.value||'1', 10));
   const variant = card.querySelector('.variant')?.value || prod.variants?.[0] || '';
-  const size = card.querySelector('.size')?.value || (prod.category==='Cheesecakes' ? (prod.options?.size?.[0] || 'Mini') : '');
+  const size = card.querySelector('.size')?.value || '';
   const addOns = [...card.querySelectorAll('.addons input:checked')].map(c=>({label:c.value,price:+c.dataset.price}));
 
   // Enforce MOQ
-  const enforcedMin = minQtyFor(prod, size);
+  const enforcedMin = minQtyFor(prod);
   if (qty < enforcedMin) {
     qty = enforcedMin;
     if (qtyInput) {
@@ -361,13 +335,7 @@ function renderCart(){
         <button class="del" aria-label="Remove item">Remove</button>
       </div>`;
     li.querySelector('.dec').addEventListener('click',()=>{
-  // Find min for this product (with size if cheesecake)
-  let min = 1;
-  if (ci.category === 'Cheesecakes') {
-    min = (MIN_ORDER['Cheesecakes'][ci.size] || 1);
-  } else {
-    min = (MIN_ORDER[ci.category] || 1);
-  }
+  const min = (MIN_ORDER[ci.category] || 1);
   ci.qty = Math.max(min, ci.qty - 1);
   persist(); renderCart(); bumpCartCount();
 });
@@ -503,7 +471,7 @@ function bindPopMove(){
 }
 
 function updateCardPrice(card, prod){
-  const size = card.querySelector('.size')?.value || (prod.category==='Cheesecakes' ? (prod.options?.size?.[0] || 'Mini') : '');
+  const size = card.querySelector('.size')?.value || '';
   const addOns = [...card.querySelectorAll('.addons input:checked')].map(c=>({label:c.value, price:+c.dataset.price}));
   const unit = calcPrice(prod, { size, addOns });
   const target = card.querySelector('[data-price]');
